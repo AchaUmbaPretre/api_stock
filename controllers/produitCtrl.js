@@ -295,7 +295,7 @@ exports.putEmplacement = (req, res) => {
 //Matiere
 exports.getMatiere = (req, res) => {
 
-  const q = "SELECT * FROM matiere WHERE est_supprime = 0";
+  const q = "SELECT * FROM matiere";
    
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
@@ -306,7 +306,7 @@ exports.getMatiere = (req, res) => {
 exports.getMatiereOne = (req, res) => {
   const {id} = req.params;
 
-  const q = "SELECT * FROM matiere WHERE est_supprime = 0 AND id = ?";
+  const q = "SELECT * FROM matiere WHERE id = ?";
    
   db.query(q,[id], (error, data) => {
       if (error) res.status(500).send(error);
@@ -315,7 +315,7 @@ exports.getMatiereOne = (req, res) => {
 }
 
 exports.postMatiere = (req, res) => {
-  const q = 'INSERT INTO matiere(`nom`) VALUES(?)';
+  const q = 'INSERT INTO matiere(`nom_matiere`) VALUES(?)';
 
   const values = [
       req.body.nom,
