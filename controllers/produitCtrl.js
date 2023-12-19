@@ -17,17 +17,7 @@ exports.getProduitCount = (req, res) => {
 
 exports.getProduit = (req, res) => {
 
-    const q = `SELECT *, matiere.nom AS nom_matiere, marque.nom AS nom_marque, emplacement.nom AS nom_emplacement, CASE
-    WHEN chaussures.quantite_stock > 0 THEN 'Actif'
-    ELSE 'Inactif'
-    END AS statut FROM produits 
-    INNER JOIN chaussures ON produits.id = chaussures.produit_id 
-    INNER JOIN categories ON produits.categorie = categories.id
-    INNER JOIN couleur ON produits.couleur = couleur.id
-    INNER JOIN matiere ON produits.matiere = matiere.id
-    INNER JOIN marque ON produits.marque = marque.id
-    INNER JOIN emplacement ON chaussures.emplacement = emplacement.id
-    WHERE produits.est_supprime = 0`
+    const q = `SELECT * FROM produit WHERE est_supprime = 0`
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
