@@ -75,27 +75,44 @@ exports.getProduitRecement = (req, res) => {
     });
   };
 
-  exports.postProduit = (req, res) => {
-    const q = 'INSERT INTO produits(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`) VALUES(?)';
-    const values = [
-        req.body.nom_produit,
-        req.body.id_categorie,
-        req.body.id_marque,
-        req.body.id_matiere,
-        req.body.actif,
-        req.body.date_entrant,
-        req.body.date_MisAjour,
-        req.body.id_cible
-    ]
-
-    db.query(q, [values], (error,data)=>{
-      if (error) {
-        res.status(500).json(error);
+exports.postProduit = (req, res) => {
+    const qProduit = 'INSERT INTO produits(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`) VALUES(?)';
+    const valuesProduit = [
+      req.body.nom_produit,
+      req.body.id_categorie,
+      req.body.id_marque,
+      req.body.id_matiere,
+      req.body.date_entrant,
+      req.body.date_MisAjour,
+      req.body.id_cible,
+      req.body.prix
+    ];
+  
+    const qImageProduit = 'INSERT INTO image_produit(`id_produit`,`image`) VALUES(?)';
+    const valuesImageProduit = [
+      req.body.id_produit,
+      req.body.image
+    ];
+  
+    db.query(qProduit, [valuesProduit], (errorProduit, dataProduit) => {
+      if (errorProduit) {
+        res.status(500).json(errorProduit);
       } else {
-        return res.json({ message: 'Processus réussi'});
-        }
-      })
-}
+        const insertedProduitId = dataProduit.insertId;
+  
+        valuesImageProduit[0] = insertedProduitId;
+  
+        db.query(qImageProduit, [valuesImageProduit], (errorImageProduit, dataImageProduit) => {
+          if (errorImageProduit) {
+            res.status(500).json(errorImageProduit);
+          } else {
+            return res.json({ message: 'Processus réussi' });
+          }
+        });
+      }
+    });
+  };
+
 exports.deleteProduit = (req, res) => {
     const {id} = req.params;
     const q = "UPDATE produits SET est_supprime = 1 WHERE id = ?";
