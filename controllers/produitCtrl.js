@@ -75,22 +75,26 @@ exports.getProduitRecement = (req, res) => {
     });
   };
 
-exports.postProduit = (req, res) => {
-    const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`) VALUES(?)';
+  exports.postProduit = (req, res) => {
+    const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`, `code_variante`) VALUES(?)';
     const valuesProduit = [
       req.body.nom_produit,
       req.body.id_categorie,
       req.body.id_marque,
       req.body.id_matiere,
+      req.body.actif,
       req.body.date_entrant,
       req.body.date_MisAjour,
       req.body.id_cible,
-      req.body.prix
+      req.body.prix,
+      req.body.code_variante
     ];
   
-    const qImageProduit = 'INSERT INTO image_produit(`id_produit`,`image`) VALUES(?)';
+    const qImageProduit = 'INSERT INTO image_produit(`id_produit`, `image`) VALUES(?, ?)';
     const valuesImageProduit = [
-      req.body.id_produit,
+      // Utilisez ici l'identifiant du produit inséré dans la table "produit"
+      // et le chemin d'accès ou la référence à l'image correspondante
+      null,
       req.body.image
     ];
   
@@ -98,11 +102,12 @@ exports.postProduit = (req, res) => {
       if (errorProduit) {
         res.status(500).json(errorProduit);
       } else {
+        // Insérer les données dans la table "image_produit" uniquement si l'insertion dans la table "produit" est réussie
         const insertedProduitId = dataProduit.insertId;
   
-        valuesImageProduit[0] = insertedProduitId;
+        valuesImageProduit[0] = insertedProduitId; // Mettre à jour l'identifiant du produit avec celui inséré
   
-        db.query(qImageProduit, [valuesImageProduit], (errorImageProduit, dataImageProduit) => {
+        db.query(qImageProduit, valuesImageProduit, (errorImageProduit, dataImageProduit) => {
           if (errorImageProduit) {
             res.status(500).json(errorImageProduit);
           } else {
@@ -112,7 +117,6 @@ exports.postProduit = (req, res) => {
       }
     });
   };
-
 exports.deleteProduit = (req, res) => {
     const {id} = req.params;
     const q = "UPDATE produits SET est_supprime = 1 WHERE id = ?";
