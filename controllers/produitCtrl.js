@@ -76,7 +76,7 @@ exports.getProduitRecement = (req, res) => {
   };
 
 exports.postProduit = (req, res) => {
-    const qProduit = 'INSERT INTO produits(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`) VALUES(?)';
+    const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`) VALUES(?)';
     const valuesProduit = [
       req.body.nom_produit,
       req.body.id_categorie,
