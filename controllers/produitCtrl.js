@@ -14,16 +14,38 @@ exports.getProduitCount = (req, res) => {
   })
 }
 
-
 exports.getProduit = (req, res) => {
 
-    const q = `SELECT * FROM produit WHERE est_supprime = 0`
+    const q = `SELECT produit.*, image_produit.image, categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere, famille.nom AS nom_famille FROM produit
+                INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+                INNER JOIN marque ON produit.id_marque = marque.id_marque
+                INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+                INNER JOIN famille ON categorie.id_famille = famille.id_famille
+                INNER JOIN image_produit ON produit.id_produit = image_produit.id_produit
+              WHERE est_supprime = 0`
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
         return res.status(200).json(data);
     });
 };
+
+exports.getProduitOne = (req,res) => {
+
+  const {id} = req.params;
+  const q = `SELECT produit.*, image_produit.image, categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere, famille.nom AS nom_famille FROM produit
+              INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+              INNER JOIN marque ON produit.id_marque = marque.id_marque
+              INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+              INNER JOIN famille ON categorie.id_famille = famille.id_famille
+              INNER JOIN image_produit ON produit.id_produit = image_produit.id_produit
+            WHERE est_supprime = 0 AND produit.id_produit = ?`;
+
+  db.query(q, id, (error, data) => {
+    if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
 
 
 exports.getProduitTotalAchats = (req, res) => {
