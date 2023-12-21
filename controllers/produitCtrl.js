@@ -65,7 +65,7 @@ exports.getProduitRecement = (req, res) => {
     });
   };
 
-  exports.postProduit = (req, res) => {
+exports.postProduit = (req, res) => {
     const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`, `code_variante`) VALUES(?)';
     const valuesProduit = [
       req.body.nom_produit,
@@ -82,8 +82,6 @@ exports.getProduitRecement = (req, res) => {
   
     const qImageProduit = 'INSERT INTO image_produit(`id_produit`, `image`) VALUES(?, ?)';
     const valuesImageProduit = [
-      // Utilisez ici l'identifiant du produit inséré dans la table "produit"
-      // et le chemin d'accès ou la référence à l'image correspondante
       null,
       req.body.image
     ];
@@ -92,10 +90,9 @@ exports.getProduitRecement = (req, res) => {
       if (errorProduit) {
         res.status(500).json(errorProduit);
       } else {
-        // Insérer les données dans la table "image_produit" uniquement si l'insertion dans la table "produit" est réussie
         const insertedProduitId = dataProduit.insertId;
   
-        valuesImageProduit[0] = insertedProduitId; // Mettre à jour l'identifiant du produit avec celui inséré
+        valuesImageProduit[0] = insertedProduitId
   
         db.query(qImageProduit, valuesImageProduit, (errorImageProduit, dataImageProduit) => {
           if (errorImageProduit) {
