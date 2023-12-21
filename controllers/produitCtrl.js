@@ -16,12 +16,11 @@ exports.getProduitCount = (req, res) => {
 
 exports.getProduit = (req, res) => {
 
-    const q = `SELECT produit.*, image_produit.image, categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere, famille.nom AS nom_famille FROM produit
+    const q = `SELECT produit.*,categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere, famille.nom AS nom_famille FROM produit
                 INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
                 INNER JOIN marque ON produit.id_marque = marque.id_marque
                 INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
                 INNER JOIN famille ON categorie.id_famille = famille.id_famille
-                INNER JOIN image_produit ON produit.id_produit = image_produit.id_produit
               WHERE est_supprime = 0`
      
     db.query(q, (error, data) => {
@@ -106,27 +105,11 @@ exports.postProduit = (req, res) => {
       req.body.code_variante
     ];
   
-    const qImageProduit = 'INSERT INTO image_produit(`id_produit`, `image`) VALUES(?, ?)';
-    const valuesImageProduit = [
-      null,
-      req.body.image
-    ];
-  
     db.query(qProduit, [valuesProduit], (errorProduit, dataProduit) => {
       if (errorProduit) {
         res.status(500).json(errorProduit);
       } else {
-        const insertedProduitId = dataProduit.insertId;
-  
-        valuesImageProduit[0] = insertedProduitId
-  
-        db.query(qImageProduit, valuesImageProduit, (errorImageProduit, dataImageProduit) => {
-          if (errorImageProduit) {
-            res.status(500).json(errorImageProduit);
-          } else {
-            return res.json({ message: 'Processus réussi' });
-          }
-        });
+        return res.json({ message: 'Processus réussi' });
       }
     });
   };
