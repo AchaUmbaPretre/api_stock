@@ -35,7 +35,7 @@ exports.getProduitOne = (req,res) => {
   const {id} = req.params;
   const q = `SELECT produit.*, image_produit.image, categorie.nom_categorie,
                 marque.nom AS nom_marque, matiere.nom_matiere,
-                famille.nom AS nom_famille, cible.nom_cible
+                famille.nom AS nom_famille, famille.id_famille, cible.nom_cible
               FROM produit
               INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
               INNER JOIN marque ON produit.id_marque = marque.id_marque
@@ -200,14 +200,14 @@ exports.getVariantProduit = (req, res) => {
   }
 
 exports.postVariantProduit = (req, res) => {
-    const qTaille = 'INSERT INTO taille(`id_cible`, `id_famille`, `taille`) VALUES(?, ?, ?)';
+    const qTaille = 'INSERT INTO taille(`id_cible`, `id_famille`, `taille`) VALUES (?, ?, ?)';
     const valuesTaille = [
       req.body.id_cible,
       req.body.id_famille,
       req.body.taille
     ];
   
-    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`,`id_taille`,`id_couleur`,`stock`,`code_variant`) VALUES(?, ?, ?, ?, ?)';
+    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`, `id_taille`, `id_couleur`, `stock`, `code_variant`) VALUES (?, ?, ?, ?, ?)';
     const valuesVariante = [
       req.body.id_produit,
       null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
@@ -216,7 +216,7 @@ exports.postVariantProduit = (req, res) => {
       req.body.code_variant
     ];
   
-    const qTaillePays = 'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`,`prix`, `code_variant`) VALUES(?, ?, ?, ?, ?, ?)';
+    const qTaillePays = 'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`, `prix`, `code_variant`) VALUES (?, ?, ?, ?, ?, ?)';
     const valuesTaillePays = [
       null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
       req.body.id_pays,
@@ -224,6 +224,12 @@ exports.postVariantProduit = (req, res) => {
       req.body.stock,
       req.body.prix,
       req.body.code_variant
+    ];
+  
+    const qImageProduit = 'INSERT INTO image_produit(`id_varianteproduit`, `image`) VALUES (?, ?)';
+    const valuesImageProduit = [
+      null, // Remplacer par la valeur correcte de `id_varianteproduit` si nécessaire
+      req.body.image
     ];
   
     db.query(qTaille, valuesTaille, (errorTaille, dataTaille) => {
@@ -241,21 +247,27 @@ exports.postVariantProduit = (req, res) => {
             const insertedVarianteId = dataVariante.insertId;
   
             valuesTaillePays[0] = insertedTailleId;
-            valuesTaillePays[4] = insertedVarianteId;
+            valuesTaillePays[5] = insertedVarianteId;
   
             db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
               if (errorTaillePays) {
                 res.status(500).json(errorTaillePays);
               } else {
-                return res.json({ message: 'Processus réussi' });
+                valuesImageProduit[0] = insertedVarianteId;
+                db.query(qImageProduit, valuesImageProduit, (errorImageProduit, dataImageProduit) => {
+                  if (errorImageProduit) {
+                    res.status(500).json(errorImageProduit);
+                  } else {
+                    res.json({ message: 'Processus réussi' });
+                  }
+                });
               }
             });
           }
         });
       }
     });
-  }
-
+  };
   //Couleur
 exports.getCouleur = (req, res) => {
 
