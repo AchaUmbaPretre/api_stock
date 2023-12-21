@@ -188,39 +188,68 @@ exports.putProduit = (req, res) => {
     });
   };
 
+ //Variant produit
+exports.getVariantProduit = (req, res) => {
 
-exports.postProduit = (req, res) => {
-  
-    const qTaille = 'INSERT INTO taille(`id_cible`, `id_pays`, `id_famille`, `taille`) VALUES(?)';
+    const q = "SELECT * FROM varianteproduit";
+     
+    db.query(q, (error, data) => {
+        if (error) res.status(500).send(error);
+        return res.status(200).json(data);
+    });
+  }
+
+exports.postVariantProduit = (req, res) => {
+    const qTaille = 'INSERT INTO taille(`id_cible`, `id_famille`, `taille`) VALUES(?, ?, ?)';
     const valuesTaille = [
       req.body.id_cible,
-      req.body.id_pays,
       req.body.id_famille,
       req.body.taille
     ];
-
-    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`,`id_taille`,`id_couleur`,`stock`,`code_variant`) VALUES(?)';
+  
+    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`,`id_taille`,`id_couleur`,`stock`,`code_variant`) VALUES(?, ?, ?, ?, ?)';
     const valuesVariante = [
       req.body.id_produit,
-      req.body.id_taille,
+      null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
       req.body.id_couleur,
       req.body.stock,
       req.body.code_variant
     ];
   
-    db.query(qTaille, [valuesTaille], (errorTaille, dataTaille) => {
-      if (errorProduit) {
+    const qTaillePays = 'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`,`prix`, `code_variant`) VALUES(?, ?, ?, ?, ?, ?)';
+    const valuesTaillePays = [
+      null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
+      req.body.id_pays,
+      req.body.id_couleur,
+      req.body.stock,
+      req.body.prix,
+      req.body.code_variant
+    ];
+  
+    db.query(qTaille, valuesTaille, (errorTaille, dataTaille) => {
+      if (errorTaille) {
         res.status(500).json(errorTaille);
       } else {
         const insertedTailleId = dataTaille.insertId;
   
-        valuesVariante[1] = insertedTailleId
+        valuesVariante[1] = insertedTailleId;
   
         db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
           if (errorVariante) {
             res.status(500).json(errorVariante);
           } else {
-            return res.json({ message: 'Processus réussi' });
+            const insertedVarianteId = dataVariante.insertId;
+  
+            valuesTaillePays[0] = insertedTailleId;
+            valuesTaillePays[4] = insertedVarianteId;
+  
+            db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
+              if (errorTaillePays) {
+                res.status(500).json(errorTaillePays);
+              } else {
+                return res.json({ message: 'Processus réussi' });
+              }
+            });
           }
         });
       }
