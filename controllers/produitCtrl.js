@@ -188,6 +188,45 @@ exports.putProduit = (req, res) => {
     });
   };
 
+
+exports.postProduit = (req, res) => {
+  
+    const qTaille = 'INSERT INTO taille(`id_cible`, `id_pays`, `id_famille`, `taille`) VALUES(?)';
+    const valuesTaille = [
+      req.body.id_cible,
+      req.body.id_pays,
+      req.body.id_famille,
+      req.body.taille
+    ];
+
+    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`,`id_taille`,`id_couleur`,`stock`,`code_variant`) VALUES(?)';
+    const valuesVariante = [
+      req.body.id_produit,
+      req.body.id_taille,
+      req.body.id_couleur,
+      req.body.stock,
+      req.body.code_variant
+    ];
+  
+    db.query(qTaille, [valuesTaille], (errorTaille, dataTaille) => {
+      if (errorProduit) {
+        res.status(500).json(errorTaille);
+      } else {
+        const insertedTailleId = dataTaille.insertId;
+  
+        valuesVariante[1] = insertedTailleId
+  
+        db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
+          if (errorVariante) {
+            res.status(500).json(errorVariante);
+          } else {
+            return res.json({ message: 'Processus réussi' });
+          }
+        });
+      }
+    });
+  }
+
   //Couleur
 exports.getCouleur = (req, res) => {
 
@@ -476,6 +515,16 @@ exports.getFamille = (req, res) => {
 exports.getCible = (req, res) => {
 
   const q = "SELECT * FROM cible";
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
+//pays
+exports.getPays = (req, res) => {
+
+  const q = "SELECT * FROM pays";
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
       return res.status(200).json(data);

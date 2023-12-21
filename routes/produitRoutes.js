@@ -1,10 +1,13 @@
 const express = require("express");
-const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne } = require("../controllers/produitCtrl.js");
+const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays } = require("../controllers/produitCtrl.js");
 const router = express.Router();
 
 router.get('/', getProduit);
 router.get('/produit/:id', getProduitOne)
 router.post('/produit', postProduit);
+
+router.get('/varianteProduit', postProduit);
+router.post('/varianteProduit', postProduit);
 
 router.get('/couleur', getCouleur);
 
@@ -35,5 +38,6 @@ router.put('/marque/:id', putMarque)
 router.get('/famille', getFamille)
 
 router.get('/cible', getCible)
+router.get('/pays', getPays)
 
 module.exports = router;
