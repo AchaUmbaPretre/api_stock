@@ -217,7 +217,7 @@ exports.getVariantProduit = (req, res) => {
                 INNER JOIN cible ON produit.id_cible = cible.id_cible
                 INNER JOIN famille ON categorie.id_famille = famille.id_famille  
                 INNER JOIN image_produit ON varianteproduit.id_varianteProduit = image_produit.id_varianteproduit
-              WHERE varianteproduit.id_varianteproduit = '${familleFilter}'`;
+              WHERE varianteproduit.id_varianteproduit = '${id}'`;
   
     db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
