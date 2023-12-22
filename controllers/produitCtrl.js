@@ -173,7 +173,7 @@ exports.putProduit = (req, res) => {
  //Variant produit
 exports.getVariantProduit = (req, res) => {
 
-    const q = `SELECT produit.*,produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
+    const q = `SELECT varianteproduit.*,produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
                 categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
                 famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
                 taille_pays.stock AS quantite,taille_pays.prix, pays.code_pays, couleur.description
@@ -201,7 +201,7 @@ exports.getVariantProduit = (req, res) => {
 exports.getVariantProduitFiltrage = (req, res) => {
     const familleFilter = req.params.id; // Récupérer le filtre de famille depuis les paramètres de requête
 
-    const q = `SELECT produit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
+    const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
                 categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
                 famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
                 taille_pays.stock AS quantite, taille_pays.prix, pays.code_pays, couleur.description
