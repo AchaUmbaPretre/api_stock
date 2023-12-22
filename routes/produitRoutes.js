@@ -4,10 +4,10 @@ const router = express.Router();
 
 router.get('/', getProduit);
 router.get('/produit/:id', getProduitOne)
-router.get('/produitFiltre/:id', getVariantProduitFiltrage)
 router.post('/produit', postProduit);
 
 router.get('/varianteProduit', getVariantProduit);
+router.get('/varianteFiltre/:id', getVariantProduitFiltrage)
 router.post('/varianteProduit', postVariantProduit);
 
 router.get('/couleur', getCouleur);

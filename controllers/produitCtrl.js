@@ -199,8 +199,8 @@ exports.getVariantProduit = (req, res) => {
   }
 
 exports.getVariantProduitFiltrage = (req, res) => {
-    const familleFilter = req.body.famille; // Récupérer le filtre de famille depuis les paramètres de requête
-  
+    const familleFilter = req.params.id; // Récupérer le filtre de famille depuis les paramètres de requête
+
     const q = `SELECT produit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
                 categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
                 famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
@@ -217,7 +217,7 @@ exports.getVariantProduitFiltrage = (req, res) => {
                 INNER JOIN cible ON produit.id_cible = cible.id_cible
                 INNER JOIN famille ON categorie.id_famille = famille.id_famille  
                 INNER JOIN image_produit ON varianteproduit.id_varianteProduit = image_produit.id_varianteproduit
-              WHERE famille.nom = '${familleFilter}'`;
+              WHERE famille.id_famille = '${familleFilter}'`;
   
     db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
