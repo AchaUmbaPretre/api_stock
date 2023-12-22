@@ -173,7 +173,20 @@ exports.putProduit = (req, res) => {
  //Variant produit
 exports.getVariantProduit = (req, res) => {
 
-    const q = "SELECT * FROM varianteproduit";
+    const q = `SELECT produit.*,produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
+                categorie.nom_categorie, marque.nom AS nom_marque, famille.nom AS nom_famille,
+                taille_pays.stock AS quantite,taille_pays.prix, pays.code_pays, couleur.description
+                FROM varianteproduit
+                  INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+                  INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+                  INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+                  INNER JOIN pays ON taille_pays.id_pays = pays.id_pays
+                  INNER JOIN couleur ON taille_pays.id_couleur = couleur.id_couleur
+                  INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie 
+                  INNER JOIN marque ON produit.id_marque = marque.id_marque 
+                  INNER JOIN famille ON categorie.id_famille = famille.id_famille        
+    
+    `;
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
