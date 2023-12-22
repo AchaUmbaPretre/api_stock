@@ -3,7 +3,7 @@ const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, post
 const router = express.Router();
 
 router.get('/', getProduit);
-router.get('/produit/:id', getProduitOne)
+router.get('/produit/:id', getProduitOne);
 router.post('/produit', postProduit);
 
 router.get('/varianteProduit', getVariantProduit);
