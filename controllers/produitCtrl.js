@@ -114,7 +114,7 @@ exports.postProduit = (req, res) => {
   };
 exports.deleteProduit = (req, res) => {
     const {id} = req.params;
-    const q = "UPDATE produits SET est_supprime = 1 WHERE id = ?";
+    const q = "UPDATE produit SET est_supprime = 1 WHERE id = ?";
   
     db.query(q, [id], (err, data) => {
       if (err) return res.send(err);
@@ -196,9 +196,8 @@ exports.getVariantProduit = (req, res) => {
         return res.status(200).json(data);
     });
   }
-
-
-  exports.getVariantProduitOne = (req, res) => {
+  
+exports.getVariantProduitOne = (req, res) => {
     const {id} = req.params; // Récupérer le filtre de famille depuis les paramètres de requête
 
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
