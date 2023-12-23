@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 
-exports.getVariantProduit = (req, res) => {
+exports.getInventaire = (req, res) => {
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
                 categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
                 famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
