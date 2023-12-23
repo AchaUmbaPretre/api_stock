@@ -4,6 +4,7 @@ const colors = require('colors');
 const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const produitRoutes = require('./routes/produitRoutes');
+const inventaireRoutes = require('./routes/inventaireRoutes');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/user", userRoutes);
 app.use('/api/produit', produitRoutes);
+app.use('/api/inventaire', inventaireRoutes);
 
 const port = process.env.PORT || 8080;
 
