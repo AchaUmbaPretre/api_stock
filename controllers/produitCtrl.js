@@ -173,22 +173,10 @@ exports.putProduit = (req, res) => {
  //Variant produit
 exports.getVariantProduit = (req, res) => {
 
-    const q = `SELECT varianteproduit.*,produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
-                categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
-                famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
-                taille_pays.stock AS quantite,taille_pays.prix, pays.code_pays, couleur.description
+    const q = `SELECT varianteproduit.*
                 FROM varianteproduit
-                  INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-                  INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-                  INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
-                  INNER JOIN pays ON taille_pays.id_pays = pays.id_pays
-                  INNER JOIN couleur ON taille_pays.id_couleur = couleur.id_couleur
-                  INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie 
-                  INNER JOIN marque ON produit.id_marque = marque.id_marque 
-                  INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
-                  INNER JOIN cible ON produit.id_cible = cible.id_cible
-                  INNER JOIN famille ON categorie.id_famille = famille.id_famille  
-                  INNER JOIN image_produit ON varianteproduit.id_varianteProduit = image_produit.id_varianteproduit      
+              GROUP BY code_variant;
+                       
     `;
      
     db.query(q, (error, data) => {
@@ -196,27 +184,26 @@ exports.getVariantProduit = (req, res) => {
         return res.status(200).json(data);
     });
   }
-  
+
 exports.getVariantProduitOne = (req, res) => {
     const {id} = req.params; // Récupérer le filtre de famille depuis les paramètres de requête
 
-    const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
-                categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
-                famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
-                taille_pays.stock AS quantite, taille_pays.prix, pays.code_pays, couleur.description
-              FROM varianteproduit
-                INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-                INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-                INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
-                INNER JOIN pays ON taille_pays.id_pays = pays.id_pays
-                INNER JOIN couleur ON taille_pays.id_couleur = couleur.id_couleur
-                INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie 
-                INNER JOIN marque ON produit.id_marque = marque.id_marque 
-                INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
-                INNER JOIN cible ON produit.id_cible = cible.id_cible
-                INNER JOIN famille ON categorie.id_famille = famille.id_famille  
-                INNER JOIN image_produit ON varianteproduit.id_varianteProduit = image_produit.id_varianteproduit
-              WHERE varianteproduit.id_varianteproduit = '${id}'`;
+    const q = `
+    SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
+    categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
+    couleur.description, taille_pays.prix
+    FROM varianteproduit
+    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit 
+    INNER JOIN marque ON produit.id_marque = marque.id_marque
+    INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+    INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+    INNER JOIN cible ON produit.id_cible = cible.id_cible
+    INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+    INNER JOIN pays ON taille.id_pays = pays.id_pays
+    INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+    INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+    WHERE varianteproduit.id_varianteproduit = '${id}'
+  `;;
   
     db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
@@ -306,74 +293,48 @@ exports.getVariantProduitFiltrageCible = (req, res) => {
   };
   
 exports.postVariantProduit = (req, res) => {
-    const qTaille = 'INSERT INTO taille(`id_cible`, `id_famille`, `taille`) VALUES (?, ?, ?)';
-    const valuesTaille = [
-      req.body.id_cible,
-      req.body.id_famille,
-      req.body.taille
-    ];
-  
-    const qVarianteProduit = 'INSERT INTO varianteproduit(`id_produit`, `id_taille`, `id_couleur`, `stock`, `code_variant`) VALUES (?, ?, ?, ?, ?)';
+    const qVarianteProduit =
+      'INSERT INTO varianteproduit(`id_produit`, `id_taille`, `id_couleur`, `stock`, `code_variant`,`img`) VALUES (?, ?, ?, ?, ?, ?)';
     const valuesVariante = [
       req.body.id_produit,
-      null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
+      req.body.id_taille,
       req.body.id_couleur,
       req.body.stock,
-      req.body.code_variant
+      req.body.code_variant,
+      req.body.img
     ];
   
-    const qTaillePays = 'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`, `prix`, `code_variant`) VALUES (?, ?, ?, ?, ?, ?)';
+    const qTaillePays =
+      'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`, `prix`, `code_variant`) VALUES (?, ?, ?, ?, ?, ?)';
     const valuesTaillePays = [
-      null, // Remplacer par la valeur correcte de `id_taille` si nécessaire
+      req.body.id_taille,
       req.body.id_pays,
       req.body.id_couleur,
       req.body.stock,
       req.body.prix,
-      req.body.code_variant
+      req.body.code_variant,
     ];
+
   
-    const qImageProduit = 'INSERT INTO image_produit(`id_varianteproduit`, `image`) VALUES (?, ?)';
-    const valuesImageProduit = [
-      null, // Remplacer par la valeur correcte de `id_varianteproduit` si nécessaire
-      req.body.image
-    ];
-  
-    db.query(qTaille, valuesTaille, (errorTaille, dataTaille) => {
-      if (errorTaille) {
-        res.status(500).json(errorTaille);
+    db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
+      if (errorVariante) {
+        res.status(500).json(errorVariante);
       } else {
-        const insertedTailleId = dataTaille.insertId;
+        insertedVarianteId = dataVariante.insertId;
   
-        valuesVariante[1] = insertedTailleId;
+        valuesTaillePays[5] = insertedVarianteId;
   
-        db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
-          if (errorVariante) {
-            res.status(500).json(errorVariante);
+        db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
+          if (errorTaillePays) {
+            res.status(500).json(errorTaillePays);
           } else {
-            const insertedVarianteId = dataVariante.insertId;
-  
-            valuesTaillePays[0] = insertedTailleId;
-            valuesTaillePays[5] = insertedVarianteId;
-  
-            db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
-              if (errorTaillePays) {
-                res.status(500).json(errorTaillePays);
-              } else {
-                valuesImageProduit[0] = insertedVarianteId;
-                db.query(qImageProduit, valuesImageProduit, (errorImageProduit, dataImageProduit) => {
-                  if (errorImageProduit) {
-                    res.status(500).json(errorImageProduit);
-                  } else {
-                    res.json({ message: 'Processus réussi' });
-                  }
-                });
-              }
-            });
+            res.json({ message: 'Processus réussi' });
           }
         });
       }
     });
   };
+  
   //Couleur
 exports.getCouleur = (req, res) => {
 
@@ -673,6 +634,18 @@ exports.getPays = (req, res) => {
 
   const q = "SELECT * FROM pays";
   db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
+//taille
+exports.getTaille = (req, res) => {
+  const {id} = req.params;
+
+  const q = "SELECT * FROM taille WHERE id_pays = ?";
+
+  db.query(q, id, (error, data) => {
       if (error) res.status(500).send(error);
       return res.status(200).json(data);
   });
