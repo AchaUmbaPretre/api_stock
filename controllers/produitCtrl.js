@@ -186,27 +186,29 @@ exports.getVariantProduit = (req, res) => {
   }
 
 exports.getVariantProduitOne = (req, res) => {
-    const {id} = req.params; // Récupérer le filtre de famille depuis les paramètres de requête
-
-    const q = `
-    SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
-    categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
-    couleur.description, taille_pays.prix
-    FROM varianteproduit
-    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit 
-    INNER JOIN marque ON produit.id_marque = marque.id_marque
-    INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
-    INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
-    INNER JOIN cible ON produit.id_cible = cible.id_cible
-    INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-    INNER JOIN pays ON taille.id_pays = pays.id_pays
-    INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
-    INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
-    WHERE varianteproduit.id_varianteproduit = '${id}'
-  `;;
+    const { id } = req.params;
   
+    const q = `
+      SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
+      categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
+      couleur.description, taille_pays.prix, famille.nom AS nom_famille
+      FROM varianteproduit
+      INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit 
+      INNER JOIN marque ON produit.id_marque = marque.id_marque
+      INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+      INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+      INNER JOIN cible ON produit.id_cible = cible.id_cible
+      INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+      INNER JOIN pays ON taille.id_pays = pays.id_pays
+      INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+      INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+      INNER JOIN famille ON categorie.id_famille = famille.id_famille 
+      WHERE produit.id_produit = '${id}'
+      ORDER BY taille.taille DESC
+    `;
+    
     db.query(q, (error, data) => {
-      if (error) res.status(500).send(error);
+      if (error) return res.status(500).send(error);
       return res.status(200).json(data);
     });
   };
