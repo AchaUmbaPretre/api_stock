@@ -52,4 +52,10 @@ router.post('/typeMouvement', postTypeMouvement)
 router.delete('/typeMouvement/:id', deleteType_mouvement)
 router.put('/typeMouvement/:id', putType_mouvement)
 
+//mouvement
+router.get('/mouvement', getTypeMouvement)
+router.post('/mouvement', postTypeMouvement)
+router.delete('/mouvementDelete/:id', deleteType_mouvement)
+router.put('/mouvement/:id', putType_mouvement)
+
 module.exports = router;
