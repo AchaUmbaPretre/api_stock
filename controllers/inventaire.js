@@ -119,7 +119,6 @@ dotenv.config();
 exports.getInventaire = (req,res)=> {
     const {id} = req.params;
 
-    console.log(id)
     const q = `SELECT taille_pays.id_taille, SUM(stock) AS nombre_de_paires, taille.taille, pays.code_pays, MIN(taille.taille) AS taille_min, MAX(taille.taille) AS taille_max
     FROM taille_pays
         INNER JOIN taille ON taille_pays.id_taille = taille.id_taille
@@ -127,6 +126,20 @@ exports.getInventaire = (req,res)=> {
     WHERE taille_pays.code_variant = ?
     GROUP BY taille_pays.id_taille;
     `
+
+    db.query(q, id, (error, data) => {
+        if (error) return res.status(500).send(error);
+    
+        return res.status(200).json(data);
+      });
+}
+
+exports.getInventaireOne = (req,res)=> {
+    const {id} = req.params;
+
+    const q = `SELECT SUM(stock) AS nombre_total_de_paires
+                    FROM taille_pays
+                WHERE taille_pays.code_variant = ?`
 
     db.query(q, id, (error, data) => {
         if (error) return res.status(500).send(error);
