@@ -15,7 +15,7 @@ exports.getClientCount = (req, res) => {
   })
 }
 exports.getClient = (req, res) => {
-    const q = "SELECT client.*, province.nom AS nom_province FROM client INNER JOIN province ON clients.ville = province.id WHERE est_supprime = 0";
+    const q = "SELECT client.*, province.nom_province FROM client INNER JOIN province ON client.id_province = province.id_province WHERE est_supprime = 0";
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
@@ -71,5 +71,16 @@ exports.putClient = (req, res) => {
   db.query(q, [...values,clientId], (err, data) => {
       if (err) return res.send(err);
       return res.json(data);
+    });
+}
+
+//province
+
+exports.getProvince = (req, res) => {
+    const q = "SELECT * FROM province";
+     
+    db.query(q, (error, data) => {
+        if (error) res.status(500).send(error);
+        return res.status(200).json(data);
     });
 }
