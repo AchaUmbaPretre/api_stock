@@ -712,6 +712,7 @@ exports.getMouvement = (req, res) => {
 }
 
 exports.postMouvement = (req, res) => {
+  const qStocke = `SELECT stock FROM  varianteproduit WHERE id_varianteproduit = ?`
   const q = 'INSERT INTO mouvement(`id_varianteproduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
 
   const values = [

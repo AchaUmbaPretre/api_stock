@@ -47,6 +47,7 @@ router.get('/pays', getPays)
 
 router.get('/tailleOne/:id', getTaille);
 
+//type des mouvement
 router.get('/typeMouvement', getTypeMouvement)
 router.post('/typeMouvement', postTypeMouvement)
 router.delete('/typeMouvement/:id', deleteType_mouvement)
