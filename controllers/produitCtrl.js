@@ -711,7 +711,7 @@ exports.getMouvement = (req, res) => {
   });
 }
 
-exports.postMouvement = (req, res) => {
+/* exports.postMouvement = (req, res) => {
   const qStocke = `SELECT stock FROM  varianteproduit WHERE id_varianteproduit = ?`
   const q = 'INSERT INTO mouvement(`id_varianteproduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
 
@@ -730,6 +730,75 @@ exports.postMouvement = (req, res) => {
       console.log(error);
     } else {
       res.json('Processus réussi');
+    }
+  });
+}; */
+
+
+exports.postMouvement = (req, res) => {
+  const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteproduit = ?`;
+  const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_produit = ? AND id_taille = ? AND id_couleur = ?`;
+  const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteproduit = ?`;
+  const qInsertMouvement = 'INSERT INTO mouvement(`id_varianteproduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+
+  const values = [
+    req.body.id_varianteproduit,
+    req.body.id_type_mouvement,
+    req.body.quantite,
+    req.body.id_utilisateur,
+    req.body.id_client,
+    req.body.id_fournisseur,
+    req.body.description
+  ];
+
+  db.query(qStocke, req.body.id_varianteproduit, (error, stockData) => {
+    if (error) {
+      res.status(500).json(error);
+      console.log(error);
+    } else {
+      const stockActuel = stockData[0].stock;
+
+      // Vérifier si la quantité demandée est disponible pour la combinaison de produit, taille et couleur
+      db.query(qStockeTaille, [req.body.id_produit, req.body.id_taille, req.body.id_couleur], (error, stockTailleData) => {
+        if (error) {
+          res.status(500).json(error);
+          console.log(error);
+        } else {
+          const stockTailleActuel = stockTailleData[0].stock;
+          let newStockTaille;
+
+          // Mettre à jour la quantité de stock en fonction du type de mouvement
+          if (req.body.id_type_mouvement === 'entrée') {
+            newStockTaille = stockTailleActuel + req.body.quantite;
+          } else if (req.body.id_type_mouvement === 'sortie') {
+            newStockTaille = stockTailleActuel - req.body.quantite;
+          }
+
+          // Vérifier si la quantité de stock est négative ou si la taille est invalide
+          if (newStockTaille < 0 || newStockTaille > stockActuel) {
+            res.status(400).json({ error: 'Quantité de stock insuffisante ou taille invalide.' });
+            return;
+          }
+
+          // Mettre à jour la quantité de stock de la combinaison de produit, taille et couleur
+          db.query(qUpdateStock, [newStockTaille, req.body.id_varianteproduit], (error, updateData) => {
+            if (error) {
+              res.status(500).json(error);
+              console.log(error);
+            } else {
+              // Insérer le mouvement dans la table des mouvements
+              db.query(qInsertMouvement, values, (error, mouvementData) => {
+                if (error) {
+                  res.status(500).json(error);
+                  console.log(error);
+                } else {
+                  res.json('Processus réussi');
+                }
+              });
+            }
+          });
+        }
+      });
     }
   });
 };
