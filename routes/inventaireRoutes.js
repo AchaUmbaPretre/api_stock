@@ -4,6 +4,6 @@ const router = express.Router();
 
 
 
-router.get("/", getInventaire);
+router.get("/:id", getInventaire);
 
 module.exports = router;

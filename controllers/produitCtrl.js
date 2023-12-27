@@ -322,9 +322,6 @@ exports.postVariantProduit = (req, res) => {
       if (errorVariante) {
         res.status(500).json(errorVariante);
       } else {
-        insertedVarianteId = dataVariante.insertId;
-  
-        valuesTaillePays[5] = insertedVarianteId;
   
         db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
           if (errorTaillePays) {
