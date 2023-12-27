@@ -1,5 +1,5 @@
 const express = require("express");
-const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement } = require("../controllers/produitCtrl.js");
+const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement, getMouvement, postMouvement, deleteMouvement, putMouvement } = require("../controllers/produitCtrl.js");
 const router = express.Router();
 
 router.get('/', getProduit);
@@ -53,9 +53,9 @@ router.delete('/typeMouvement/:id', deleteType_mouvement)
 router.put('/typeMouvement/:id', putType_mouvement)
 
 //mouvement
-router.get('/mouvement', getTypeMouvement)
-router.post('/mouvement', postTypeMouvement)
-router.delete('/mouvementDelete/:id', deleteType_mouvement)
-router.put('/mouvement/:id', putType_mouvement)
+router.get('/mouvement', getMouvement)
+router.post('/mouvement', postMouvement)
+router.delete('/mouvementDelete/:id', deleteMouvement)
+router.put('/mouvement/:id', putMouvement)
 
 module.exports = router;
