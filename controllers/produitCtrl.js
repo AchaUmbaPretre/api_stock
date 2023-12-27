@@ -649,3 +649,53 @@ exports.getTaille = (req, res) => {
       return res.status(200).json(data);
   });
 }
+
+//Type des mouvement
+
+exports.getTypeMouvement = (req, res) => {
+
+  const q = "SELECT * FROM type_mouvement";
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
+exports.postTypeMouvement = (req, res) => {
+  const q = 'INSERT INTO type_mouvement(`nom_type_mouvement`, `type_mouvement`) VALUES(?,?)';
+
+  const values = [
+      req.body.nom_type_mouvement,
+      req.body.type_mouvement
+  ]
+  db.query(q, values, (error, data) => {
+    if (error) {
+      res.status(500).json(error);
+      console.log(error);
+    } else {
+      res.json('Processus réussi');
+    }
+  });
+};
+
+exports.deleteType_mouvement = (req, res) => {
+  const {id} = req.params;
+  const q = "DELETE FROM type_mouvement WHERE id = ?"
+
+  db.query(q, [id], (err, data)=>{
+      if (err) return res.send(err);
+    return res.json(data);
+  })
+};
+
+exports.putType_mouvement = (req, res) => {
+  const {id} = req.params;
+const q = "UPDATE type_mouvement SET `nom_type_mouvement`= ?, `type_mouvement`= ? WHERE id = ?"
+const { nom_type_mouvement, type_mouvement} = req.body;
+
+
+db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
+    if (err) return res.send(err);
+    return res.json(data);
+  });
+}
