@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const produitRoutes = require('./routes/produitRoutes');
 const inventaireRoutes = require('./routes/inventaireRoutes');
+const clientRoutes = require('./routes/clientRoutes')
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
+app.use("/api/client", clientRoutes);
 app.use('/api/produit', produitRoutes);
 app.use('/api/inventaire', inventaireRoutes);
 
