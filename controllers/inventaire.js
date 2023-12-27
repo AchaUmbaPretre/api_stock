@@ -90,7 +90,7 @@ dotenv.config();
   };
  */
 
-exports.getInventaire = (req, res) => {
+/* exports.getInventaire = (req, res) => {
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, taille.taille AS pointure,
                 categorie.nom_categorie, marque.nom AS nom_marque, matiere.nom_matiere,
                 famille.nom AS nom_famille, cible.nom_cible, image_produit.image,
@@ -114,4 +114,19 @@ exports.getInventaire = (req, res) => {
   
       return res.status(200).json(data);
     });
-  };
+  }; */
+
+exports.getInventaire = (req,res)=> {
+    const q = `SELECT taille_pays.id_taille, SUM(stock) AS nombre_de_paires, taille.taille, pays.code_paysèèè
+    FROM taille_pays
+        INNER JOIN taille ON taille_pays.id_taille = taille.id_taille
+        INNER JOIN pays ON taille_pays.id_pays = pays.id_pays
+    GROUP BY id_taille;;   
+    `
+
+    db.query(q, (error, data) => {
+        if (error) return res.status(500).send(error);
+    
+        return res.status(200).json(data);
+      });
+}
