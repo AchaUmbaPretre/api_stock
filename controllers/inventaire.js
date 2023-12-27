@@ -117,11 +117,11 @@ dotenv.config();
   }; */
 
 exports.getInventaire = (req,res)=> {
-    const q = `SELECT taille_pays.id_taille, SUM(stock) AS nombre_de_paires, taille.taille, pays.code_paysèèè
+    const q = `SELECT taille_pays.id_taille, SUM(stock) AS nombre_de_paires, taille.taille, pays.code_pays
     FROM taille_pays
         INNER JOIN taille ON taille_pays.id_taille = taille.id_taille
         INNER JOIN pays ON taille_pays.id_pays = pays.id_pays
-    GROUP BY id_taille;;   
+    GROUP BY id_taille;   
     `
 
     db.query(q, (error, data) => {

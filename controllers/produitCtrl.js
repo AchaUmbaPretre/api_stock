@@ -175,7 +175,7 @@ exports.getVariantProduit = (req, res) => {
 
     const q = `SELECT varianteproduit.*
                 FROM varianteproduit
-              GROUP BY code_variant;
+              GROUP BY img;
                        
     `;
      
@@ -203,8 +203,8 @@ exports.getVariantProduitOne = (req, res) => {
       INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
       INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
       INNER JOIN famille ON categorie.id_famille = famille.id_famille 
-      WHERE produit.id_produit = '${id}'
-      ORDER BY taille.taille DESC
+      WHERE varianteproduit.id_varianteProduit = '${id}'
+      ORDER BY taille.taille DESC 
     `;
     
     db.query(q, (error, data) => {
