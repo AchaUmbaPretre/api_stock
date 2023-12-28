@@ -749,7 +749,19 @@ exports.getMouvement = (req, res) => {
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    return res.status(200).json(data);
+
+    const mouvementData = data.map(mouvement => {
+      let signe = "";
+      if (mouvement.id_type_mouvement === 1) {
+        signe = "+";
+      } else if (mouvement.id_type_mouvement === 2) {
+        signe = "-";
+      }
+      mouvement.quantite = `${signe}${mouvement.quantite}`;
+      return mouvement;
+    });
+
+    return res.status(200).json(mouvementData);
   });
 };
 
