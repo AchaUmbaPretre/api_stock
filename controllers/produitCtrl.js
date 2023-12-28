@@ -775,10 +775,11 @@ exports.getMouvement = (req, res) => {
 
 
 exports.postMouvement = (req, res) => {
+  
   const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
   const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_produit = ? AND id_taille = ? AND id_couleur = ?`;
   const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
-  const qInsertMouvement = 'INSERT INTO mouvement(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
 
   const values = [ 
     req.body.id_varianteProduit,
@@ -789,8 +790,6 @@ exports.postMouvement = (req, res) => {
     req.body.id_fournisseur,
     req.body.description
   ];
-
-  console.log(req.body)
 
   db.query(qStocke, [req.body.id_varianteProduit], (error, stockData) => {
     if (error) {
@@ -804,30 +803,30 @@ exports.postMouvement = (req, res) => {
           res.status(500).json(error);
           console.log(error);
         } else {
-          console.log('Bonjour',stockTailleData)
           const stockTailleActuel = stockTailleData[0].stock;
-          console.log('Bonjour',stockTailleActuel)
+
           let newStockTaille;
 
-          if (req.body.id_type_mouvement === '1') {
-            newStockTaille = stockTailleActuel + req.body.quantite;
-          } else if (req.body.id_type_mouvement === '2') {
-            newStockTaille = stockTailleActuel - req.body.quantite;
+          if (req.body.id_type_mouvement === 1) {
+            newStockTaille = stockTailleActuel + parseInt(req.body.quantite);
+          } else if (req.body.id_type_mouvement === 2) {
+            newStockTaille = stockTailleActuel - parseInt(req.body.quantite);
+            if (newStockTaille > stockActuel) {
+              res.status(400).json({ error: 'Quantité de stock insuffisante ou taille invalide.' });
+              return;
+            }
+            
+            if (newStockTaille < 0) {
+              res.status(400).json({ error: 'Quantité de stock insuffisante.' });
+              return;
+            }
           }
 
-          // Vérifier si la quantité de stock est négative ou si la taille est invalide
-          if (newStockTaille < 0 || newStockTaille > stockActuel) {
-            res.status(400).json({ error: 'Quantité de stock insuffisante ou taille invalide.' });
-            return;
-          }
-
-          // Mettre à jour la quantité de stock de la combinaison de produit, taille et couleur
           db.query(qUpdateStock, [newStockTaille, req.body.id_varianteProduit], (error, updateData) => {
             if (error) {
               res.status(500).json(error);
               console.log(error);
             } else {
-              // Insérer le mouvement dans la table des mouvements
               db.query(qInsertMouvement, values, (error, mouvementData) => {
                 if (error) {
                   res.status(500).json(error);
