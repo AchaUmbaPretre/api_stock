@@ -736,13 +736,13 @@ exports.getMouvement = (req, res) => {
 
 
 exports.postMouvement = (req, res) => {
-  const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteproduit = ?`;
+  const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
   const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_produit = ? AND id_taille = ? AND id_couleur = ?`;
-  const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteproduit = ?`;
-  const qInsertMouvement = 'INSERT INTO mouvement(`id_varianteproduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+  const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
+  const qInsertMouvement = 'INSERT INTO mouvement(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
 
-  const values = [
-    req.body.id_varianteproduit,
+  const values = [ 
+    req.body.id_varianteProduit,
     req.body.id_type_mouvement,
     req.body.quantite,
     req.body.id_utilisateur,
@@ -751,12 +751,15 @@ exports.postMouvement = (req, res) => {
     req.body.description
   ];
 
-  db.query(qStocke, req.body.id_varianteproduit, (error, stockData) => {
+  console.log(values)
+
+  db.query(qStocke, [req.body.id_varianteProduit], (error, stockData) => {
     if (error) {
       res.status(500).json(error);
       console.log(error);
     } else {
       const stockActuel = stockData[0].stock;
+      console.log(stockActuel)
 
       // Vérifier si la quantité demandée est disponible pour la combinaison de produit, taille et couleur
       db.query(qStockeTaille, [req.body.id_produit, req.body.id_taille, req.body.id_couleur], (error, stockTailleData) => {
@@ -768,9 +771,9 @@ exports.postMouvement = (req, res) => {
           let newStockTaille;
 
           // Mettre à jour la quantité de stock en fonction du type de mouvement
-          if (req.body.id_type_mouvement === 'entrée') {
+          if (req.body.id_type_mouvement === '1') {
             newStockTaille = stockTailleActuel + req.body.quantite;
-          } else if (req.body.id_type_mouvement === 'sortie') {
+          } else if (req.body.id_type_mouvement === '2') {
             newStockTaille = stockTailleActuel - req.body.quantite;
           }
 
@@ -781,7 +784,7 @@ exports.postMouvement = (req, res) => {
           }
 
           // Mettre à jour la quantité de stock de la combinaison de produit, taille et couleur
-          db.query(qUpdateStock, [newStockTaille, req.body.id_varianteproduit], (error, updateData) => {
+          db.query(qUpdateStock, [newStockTaille, req.body.id_varianteProduit], (error, updateData) => {
             if (error) {
               res.status(500).json(error);
               console.log(error);
