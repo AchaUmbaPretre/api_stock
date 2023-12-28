@@ -53,3 +53,54 @@ exports.deleteDemandeCommande = (req, res) => {
     })
   };
 
+//Commande
+
+exports.getCommandeCount = (req, res) => {
+    const q = "SELECT COUNT(*) AS total FROM commande WHERE est_supprime = 0";
+  
+    db.query(q ,(error, data)=>{
+      if(error) res.status(500).send(error)
+  
+      return res.status(200).json(data);
+  })
+}
+exports.getDemandeCommande = (req, res) => {
+    const q = "SELECT * FROM commande WHERE est_supprime = 0";
+     
+    db.query(q, (error, data) => {
+        if (error) res.status(500).send(error);
+        return res.status(200).json(data);
+    });
+}
+
+exports.postDemandeCommande = (req, res) => {
+    const q = 'INSERT INTO commande(`id_client`, `statut`,`quantite`, `livraison`, `paiement`, `retour`) VALUES(?,?,?,?,?,?)';
+  
+    const values = [
+        req.body.id_client,
+        req.body.statut,
+        req.body.quantite,
+        req.body.livraison,
+        req.body.paiement,
+        req.body.retour
+    ]
+    db.query(q, values, (error, data) => {
+      if (error) {
+        res.status(500).json(error);
+        console.log(error);
+      } else {
+        res.json('Processus réussi');
+      }
+    });
+  };
+  
+
+exports.deleteCommande = (req, res) => {
+    const {id} = req.params;
+    const q = "DELETE FROM commande WHERE id_commande = ?"
+  
+    db.query(q, [id], (err, data)=>{
+        if (err) return res.send(err);
+      return res.json(data);
+    })
+  }
