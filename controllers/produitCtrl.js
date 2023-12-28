@@ -740,7 +740,6 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 }
 
 //mouvement
-
 exports.getMouvement = (req, res) => {
   const q = `SELECT mouvement_stock.*, varianteproduit.img, type_mouvement.type_mouvement FROM mouvement_stock
   INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit
