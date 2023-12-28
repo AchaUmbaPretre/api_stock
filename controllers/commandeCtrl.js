@@ -24,11 +24,13 @@ exports.getDemandeCommande = (req, res) => {
 }
 
 exports.postDemandeCommande = (req, res) => {
-    const q = 'INSERT INTO demande_commande(`nom_type_mouvement`, `type_mouvement`) VALUES(?,?)';
+    const q = 'INSERT INTO demande_commande(`id_client`, `statut_demande`,`description`, `quantite`) VALUES(?,?,?,?)';
   
     const values = [
-        req.body.nom_type_mouvement,
-        req.body.type_mouvement
+        req.body.id_client,
+        req.body.statut_demande,
+        req.body.description,
+        req.body.quantite
     ]
     db.query(q, values, (error, data) => {
       if (error) {
