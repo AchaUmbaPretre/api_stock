@@ -790,20 +790,23 @@ exports.postMouvement = (req, res) => {
     req.body.description
   ];
 
+  console.log(req.body)
+
   db.query(qStocke, [req.body.id_varianteProduit], (error, stockData) => {
     if (error) {
       res.status(500).json(error);
       console.log(error);
     } else {
       const stockActuel = stockData[0].stock;
-      console.log(stockActuel)
 
       db.query(qStockeTaille, [req.body.id_produit, req.body.id_taille, req.body.id_couleur], (error, stockTailleData) => {
         if (error) {
           res.status(500).json(error);
           console.log(error);
         } else {
+          console.log('Bonjour',stockTailleData)
           const stockTailleActuel = stockTailleData[0].stock;
+          console.log('Bonjour',stockTailleActuel)
           let newStockTaille;
 
           if (req.body.id_type_mouvement === '1') {
