@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 //Client
-exports.getCommandeCount = (req, res) => {
+exports.getDemandeCommandeCount = (req, res) => {
     const q = "SELECT COUNT(*) AS total FROM demande_commande WHERE est_supprime = 0";
   
     db.query(q ,(error, data)=>{
@@ -14,7 +14,7 @@ exports.getCommandeCount = (req, res) => {
       return res.status(200).json(data);
   })
 }
-exports.getCommande = (req, res) => {
+exports.getDemandeCommande = (req, res) => {
     const q = "SELECT * FROM demande_commande WHERE est_supprime = 0";
      
     db.query(q, (error, data) => {
@@ -23,7 +23,25 @@ exports.getCommande = (req, res) => {
     });
 }
 
-exports.deleteCommande = (req, res) => {
+exports.postDemandeCommande = (req, res) => {
+    const q = 'INSERT INTO demande_commande(`nom_type_mouvement`, `type_mouvement`) VALUES(?,?)';
+  
+    const values = [
+        req.body.nom_type_mouvement,
+        req.body.type_mouvement
+    ]
+    db.query(q, values, (error, data) => {
+      if (error) {
+        res.status(500).json(error);
+        console.log(error);
+      } else {
+        res.json('Processus réussi');
+      }
+    });
+  };
+  
+
+exports.deleteDemandeCommande = (req, res) => {
     const {id} = req.params;
     const q = "DELETE FROM demande_commande WHERE id_demande_commande = ?"
   
@@ -32,3 +50,4 @@ exports.deleteCommande = (req, res) => {
       return res.json(data);
     })
   };
+
