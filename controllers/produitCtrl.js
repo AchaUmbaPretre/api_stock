@@ -848,8 +848,8 @@ exports.deleteMouvement = (req, res) => {
 };
 
 exports.putMouvement = (req, res) => {
-  const {id} = req.params;
-const q = "UPDATE type_mouvement SET `id_varianteproduit`= ?, `id_type_mouvement`= ?, `quantite`= ?, `id_utilisateur`= ?, `id_client`= ?, `id_fournisseur`= ?, `description`= ? WHERE id_mouvement = ?"
+  const { id } = req.params;
+  const q = "UPDATE type_mouvement SET `id_varianteproduit`= ?, `id_type_mouvement`= ?, `quantite`= ?, `id_utilisateur`= ?, `id_client`= ?, `id_fournisseur`= ?, `description`= ? WHERE id_mouvement = ?";
   const values = [
     req.body.id_varianteproduit,
     req.body.id_type_mouvement,
@@ -857,12 +857,14 @@ const q = "UPDATE type_mouvement SET `id_varianteproduit`= ?, `id_type_mouvement
     req.body.id_utilisateur,
     req.body.id_client,
     req.body.id_fournisseur,
-    req.body.description
-  ]
+    req.body.description,
+    id
+  ];
 
-
-db.query(q, [values], (err, data) => {
-    if (err) return res.send(err);
+  db.query(q, values, (err, data) => {
+    if (err) {
+      return res.send(err);
+    }
     return res.json(data);
   });
-}
+};
