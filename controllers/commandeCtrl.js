@@ -64,7 +64,7 @@ exports.getCommandeCount = (req, res) => {
       return res.status(200).json(data);
   })
 }
-exports.getDemandeCommande = (req, res) => {
+exports.getCommande = (req, res) => {
     const q = "SELECT * FROM commande WHERE est_supprime = 0";
      
     db.query(q, (error, data) => {
@@ -73,7 +73,7 @@ exports.getDemandeCommande = (req, res) => {
     });
 }
 
-exports.postDemandeCommande = (req, res) => {
+exports.postCommande = (req, res) => {
     const q = 'INSERT INTO commande(`id_client`, `statut`,`quantite`, `livraison`, `paiement`, `retour`) VALUES(?,?,?,?,?,?)';
   
     const values = [
