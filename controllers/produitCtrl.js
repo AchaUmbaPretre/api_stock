@@ -225,6 +225,33 @@ exports.getVariantProduitOne = (req, res) => {
     });
   };
 
+exports.getMouvementVariante = (req,res) => {
+  const {id} = req.params;
+
+  const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
+  categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
+  couleur.description, taille_pays.prix, famille.nom AS nom_famille
+FROM varianteproduit
+INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit 
+INNER JOIN marque ON produit.id_marque = marque.id_marque
+INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+INNER JOIN cible ON produit.id_cible = cible.id_cible
+INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+INNER JOIN pays ON taille.id_pays = pays.id_pays
+INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+INNER JOIN famille ON categorie.id_famille = famille.id_famille 
+WHERE produit.id_produit = '${id}'
+GROUP BY varianteproduit.id_varianteproduit
+ORDER BY taille.taille DESC;
+  `
+  db.query(q, (error, data) => {
+    if (error) return res.status(500).send(error);
+    return res.status(200).json(data);
+  });
+}
+
 exports.getVariantProduitFiltrage = (req, res) => {
     const familleFilter = req.params.id;
 
@@ -773,7 +800,6 @@ exports.postMouvement = (req, res) => {
       const stockActuel = stockData[0].stock;
       console.log(stockActuel)
 
-      // Vérifier si la quantité demandée est disponible pour la combinaison de produit, taille et couleur
       db.query(qStockeTaille, [req.body.id_produit, req.body.id_taille, req.body.id_couleur], (error, stockTailleData) => {
         if (error) {
           res.status(500).json(error);
@@ -782,7 +808,6 @@ exports.postMouvement = (req, res) => {
           const stockTailleActuel = stockTailleData[0].stock;
           let newStockTaille;
 
-          // Mettre à jour la quantité de stock en fonction du type de mouvement
           if (req.body.id_type_mouvement === '1') {
             newStockTaille = stockTailleActuel + req.body.quantite;
           } else if (req.body.id_type_mouvement === '2') {
