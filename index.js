@@ -5,7 +5,8 @@ const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes');
 const produitRoutes = require('./routes/produitRoutes');
 const inventaireRoutes = require('./routes/inventaireRoutes');
-const clientRoutes = require('./routes/clientRoutes')
+const clientRoutes = require('./routes/clientRoutes');
+const commandeRoutes = require('./routes/commandeRoutes')
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/client", clientRoutes);
 app.use('/api/produit', produitRoutes);
 app.use('/api/inventaire', inventaireRoutes);
+app.use('/api/commande', commandeRoutes);
 
 const port = process.env.PORT || 8080;
 
