@@ -741,9 +741,12 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 
 //mouvement
 exports.getMouvement = (req, res) => {
-  const q = `SELECT mouvement_stock.*, varianteproduit.img, type_mouvement.type_mouvement FROM mouvement_stock
-  INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit
-  INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement`;
+  const q = `SELECT mouvement_stock.*,varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement,
+    produit.nom_produit 
+      FROM mouvement_stock 
+    INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
+    INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
+    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit;`;
 
   db.query(q, (error, data) => {
     if (error) {
