@@ -742,40 +742,19 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 //mouvement
 
 exports.getMouvement = (req, res) => {
+  const q = `SELECT mouvement_stock.*, varianteproduit.img FROM mouvement_stock
+              INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit`;
 
-  const q = "SELECT * FROM mouvement";
   db.query(q, (error, data) => {
-      if (error) res.status(500).send(error);
-      return res.status(200).json(data);
-  });
-}
-
-/* exports.postMouvement = (req, res) => {
-  const qStocke = `SELECT stock FROM  varianteproduit WHERE id_varianteproduit = ?`
-  const q = 'INSERT INTO mouvement(`id_varianteproduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
-
-  const values = [
-      req.body.id_varianteproduit,
-      req.body.id_type_mouvement,
-      req.body.quantite,
-      req.body.id_utilisateur,
-      req.body.id_client,
-      req.body.id_fournisseur,
-      req.body.description
-  ]
-  db.query(q, values, (error, data) => {
     if (error) {
-      res.status(500).json(error);
-      console.log(error);
-    } else {
-      res.json('Processus réussi');
+      return res.status(500).json({ error: error.message });
     }
+    return res.status(200).json(data);
   });
-}; */
-
+};
 
 exports.postMouvement = (req, res) => {
-  
+
   const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
   const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_produit = ? AND id_taille = ? AND id_couleur = ?`;
   const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
