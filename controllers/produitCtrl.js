@@ -185,6 +185,18 @@ exports.getVariantProduit = (req, res) => {
     });
   }
 
+exports.getVariantProduitAll = (req, res) => {
+
+    const q = `SELECT varianteproduit.*
+                FROM varianteproduit             
+    `;
+     
+    db.query(q, (error, data) => {
+        if (error) res.status(500).send(error);
+        return res.status(200).json(data);
+    });
+  }
+
 exports.getVariantProduitOne = (req, res) => {
     const { id } = req.params;
   
