@@ -790,8 +790,6 @@ exports.postMouvement = (req, res) => {
     req.body.description
   ];
 
-  console.log(values)
-
   db.query(qStocke, [req.body.id_varianteProduit], (error, stockData) => {
     if (error) {
       res.status(500).json(error);
