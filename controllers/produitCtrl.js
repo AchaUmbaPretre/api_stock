@@ -90,7 +90,7 @@ exports.getProduitRecement = (req, res) => {
   };
 
 exports.postProduit = (req, res) => {
-    const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`, `code_variante`) VALUES(?)';
+    const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`, `code_variante`, `etatProduit`) VALUES(?)';
     const valuesProduit = [
       req.body.nom_produit,
       req.body.id_categorie,
@@ -101,7 +101,8 @@ exports.postProduit = (req, res) => {
       req.body.date_MisAjour,
       req.body.id_cible,
       req.body.prix,
-      req.body.code_variante
+      req.body.code_variante,
+      req.body.etatProduit
     ];
   
     db.query(qProduit, [valuesProduit], (errorProduit, dataProduit) => {
