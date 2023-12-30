@@ -689,11 +689,20 @@ exports.getTaille = (req, res) => {
   });
 }
 
-//Type des mouvement
+//Categorie des mouvement
+exports.getCatMouvement = (req, res) => {
 
+  const q = "SELECT * FROM categorie_mouvement";
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
+//Type des mouvement
 exports.getTypeMouvement = (req, res) => {
 
-  const q = "SELECT * FROM type_mouvement";
+  const q = "SELECT * FROM type_mouvement INNER JOIN categorie_mouvement ON type_mouvement.categorie_mouvement = categorie_mouvement.id_cat_mouvement";
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
       return res.status(200).json(data);
@@ -701,11 +710,11 @@ exports.getTypeMouvement = (req, res) => {
 }
 
 exports.postTypeMouvement = (req, res) => {
-  const q = 'INSERT INTO type_mouvement(`nom_type_mouvement`, `type_mouvement`) VALUES(?,?)';
+  const q = 'INSERT INTO type_mouvement(`type_mouvement`, `categorie_mouvement`) VALUES(?,?)';
 
   const values = [
-      req.body.nom_type_mouvement,
-      req.body.type_mouvement
+      req.body.type_mouvement,
+      req.body.categorie_mouvement
   ]
   db.query(q, values, (error, data) => {
     if (error) {
