@@ -213,7 +213,7 @@ exports.getVariantProduitOne = (req, res) => {
       INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
       INNER JOIN pays ON taille.id_pays = pays.id_pays
       INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
-      INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+      INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
       INNER JOIN famille ON categorie.id_famille = famille.id_famille 
       WHERE varianteproduit.id_varianteProduit = '${id}'
       ORDER BY taille.taille DESC 
