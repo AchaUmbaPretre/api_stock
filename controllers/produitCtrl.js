@@ -878,3 +878,4 @@ exports.putMouvement = (req, res) => {
     return res.json(data);
   });
 };
+
