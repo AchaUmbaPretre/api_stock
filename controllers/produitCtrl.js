@@ -866,7 +866,7 @@ exports.putMouvement = (req, res) => {
     req.body.quantite,
     req.body.id_utilisateur,
     req.body.id_client,
-    req.body.id_fournisseur,
+    req.body.id_fournisseur, 
     req.body.description,
     id
   ];
