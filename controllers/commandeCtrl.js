@@ -15,7 +15,7 @@ exports.getDemandeCommandeCount = (req, res) => {
   })
 }
 exports.getDemandeCommande = (req, res) => {
-    const q = "SELECT * FROM demande_commande WHERE est_supprime = 0";
+    const q = "SELECT * FROM detail_commande WHERE est_supprime = 0";
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
@@ -24,10 +24,13 @@ exports.getDemandeCommande = (req, res) => {
 }
 
 exports.postDemandeCommande = (req, res) => {
-    const q = 'INSERT INTO demande_commande(`id_client`, `statut_demande`,`description`, `quantite`) VALUES(?,?,?,?)';
+    const q = 'INSERT INTO detail_commande(`id_commande`,`id_varianteProduit`, `id_client`, `prix`, `statut_demande`, `statut_demande`,`description`, `quantite`,`user_cr`) VALUES(?)';
   
     const values = [
+        req.body.id_commande,
+        req.body.id_varianteProduit,
         req.body.id_client,
+        req.body.id_prix,
         req.body.statut_demande,
         req.body.description,
         req.body.quantite
@@ -45,7 +48,7 @@ exports.postDemandeCommande = (req, res) => {
 
 exports.deleteDemandeCommande = (req, res) => {
     const {id} = req.params;
-    const q = "DELETE FROM demande_commande WHERE id_demande_commande = ?"
+    const q = "DELETE FROM detail_commande WHERE id_detail_commande = ?"
   
     db.query(q, [id], (err, data)=>{
         if (err) return res.send(err);
@@ -54,7 +57,6 @@ exports.deleteDemandeCommande = (req, res) => {
   };
 
 //Commande
-
 exports.getCommandeCount = (req, res) => {
     const q = "SELECT COUNT(*) AS total FROM commande WHERE est_supprime = 0";
   
