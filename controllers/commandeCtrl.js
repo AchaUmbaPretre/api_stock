@@ -76,14 +76,17 @@ exports.getCommande = (req, res) => {
 }
 
 exports.postCommande = (req, res) => {
-    const q = 'INSERT INTO commande(`id_client`, `statut`,`quantite`, `livraison`, `paiement`, `retour`) VALUES(?,?,?,?,?,?)';
+    const q = 'INSERT INTO commande(`id_client`, `statut`,`quantite`, `id_livraison`, `id_paiement`, `user_cr`, `id_shop`, `paye`, `retour`) VALUES(?,?,?,?,?,?,?,?,?)';
   
     const values = [
         req.body.id_client,
         req.body.statut,
         req.body.quantite,
-        req.body.livraison,
-        req.body.paiement,
+        req.body.id_livraison,
+        req.body.id_paiement,
+        req.body.user_cr,
+        req.body.id_shop,
+        req.body.paye,
         req.body.retour
     ]
     db.query(q, values, (error, data) => {
