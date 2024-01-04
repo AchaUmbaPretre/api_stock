@@ -57,6 +57,16 @@ exports.deleteDemandeCommande = (req, res) => {
   };
 
 //Commande
+
+exports.getCommande = (req, res) => {
+  const q = "SELECT * FROM commande WHERE est_supprime = 0";
+   
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
 exports.getCommandeCount = (req, res) => {
     const q = "SELECT COUNT(*) AS total FROM commande WHERE est_supprime = 0";
   
@@ -66,22 +76,13 @@ exports.getCommandeCount = (req, res) => {
       return res.status(200).json(data);
   })
 }
-exports.getCommande = (req, res) => {
-    const q = "SELECT * FROM commande WHERE est_supprime = 0";
-     
-    db.query(q, (error, data) => {
-        if (error) res.status(500).send(error);
-        return res.status(200).json(data);
-    });
-}
 
 exports.postCommande = (req, res) => {
-    const q = 'INSERT INTO commande(`id_client`, `statut`,`quantite`, `id_livraison`, `id_paiement`, `user_cr`, `id_shop`, `paye`, `retour`) VALUES(?,?,?,?,?,?,?,?,?)';
+    const q = 'INSERT INTO commande(`id_client`, `statut`, `id_livraison`, `id_paiement`, `user_cr`, `id_shop`, `paye`, `retour`) VALUES(?,?,?,?,?,?,?,?,?)';
   
     const values = [
         req.body.id_client,
         req.body.statut,
-        req.body.quantite,
         req.body.id_livraison,
         req.body.id_paiement,
         req.body.user_cr,
