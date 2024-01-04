@@ -1,6 +1,7 @@
-const { db } = require("./../config/db.js");
+const { db } = require("./../config/db");
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const bcrypt = require('bcryptjs')
 
 dotenv.config();
 
@@ -13,9 +14,10 @@ exports.registerController = async (req, res) =>{
     const query = "SELECT * FROM users WHERE email = ?";
     const values = [email];
 
-    connection.query(query, values, async (err, results) => {
+    db.query(query, values, async (err, results) => {
       if (err) {
         res.status(500).json(err);
+        
       } else {
         if (results.length > 0) {
           res.status(409).json("L'utilisateur existe déjà.");
@@ -26,7 +28,7 @@ exports.registerController = async (req, res) =>{
           const insertQuery = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
           const insertValues = [username, email, hashedPassword, role];
 
-          connection.query(insertQuery, insertValues, (err, insertResult) => {
+          db.query(insertQuery, insertValues, (err, insertResult) => {
             if (err) {
               res.status(500).json(err);
             } else {
@@ -47,7 +49,7 @@ exports.loginController = async (req, res) => {
     const query = "SELECT * FROM users WHERE username = ?";
     const values = [username];
   
-    connection.query(query, values, async (err, results) => {
+    db.query(query, values, async (err, results) => {
       if (err) {
         res.status(500).json(err);
       } else {
