@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const colors = require('colors');
 const dotenv = require('dotenv');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const produitRoutes = require('./routes/produitRoutes');
 const inventaireRoutes = require('./routes/inventaireRoutes');
@@ -19,6 +20,7 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
 
+app.use("/api/auth", userRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/client", clientRoutes);
 app.use('/api/produit', produitRoutes);
