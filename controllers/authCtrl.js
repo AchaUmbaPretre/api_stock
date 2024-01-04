@@ -10,7 +10,6 @@ exports.registerController = async (req, res) =>{
     const { username, email, password, role } = req.body;
 
   try {
-    // Vérifier si l'utilisateur existe déjà
     const query = "SELECT * FROM users WHERE email = ?";
     const values = [email];
 
@@ -22,7 +21,7 @@ exports.registerController = async (req, res) =>{
         if (results.length > 0) {
           res.status(409).json("L'utilisateur existe déjà.");
         } else {
-          // Hachage du mot de passe
+          
           const hashedPassword = await bcrypt.hash(password, 10);
 
           const insertQuery = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
