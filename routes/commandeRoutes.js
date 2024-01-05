@@ -1,11 +1,12 @@
 const express = require("express");
-const { getDemandeCommande, getDemandeCommandeCount, postDemandeCommande, deleteDemandeCommande, getCommandeCount, getCommande, postCommande, deleteCommande, getStatus } = require("../controllers/commandeCtrl");
+const { getDemandeCommande, getDemandeCommandeCount, postDemandeCommande, deleteDemandeCommande, getCommandeCount, getCommande, postCommande, deleteCommande, getStatus, putCommande } = require("../controllers/commandeCtrl");
 const router = express.Router();
 
 //commande
 router.get('/', getCommande)
 router.get('/commandeCount', getCommandeCount)
 router.post('/commandePost', postCommande)
+router.put('/commandePut', putCommande)
 router.delete('/commande/:id', deleteCommande)
 
 //Status

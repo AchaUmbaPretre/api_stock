@@ -104,7 +104,31 @@ exports.postCommande = (req, res) => {
       }
     });
   };
+
+  exports.putCommande = (req, res) => {
+    const { id } = req.params;
+    const q = "UPDATE commande SET `id_client` = ?,`statut` = ?,`id_livraison` = ?,`id_paiement` = ?,`user_cr` = ?,`id_shop` = ?,`paye` = ?,`retour` = ? WHERE id = ?";
+
+    const values = [
+      req.body.id_client,
+      req.body.statut,
+      req.body.id_livraison || 0,
+      req.body.id_paiement || 0,
+      req.body.user_cr || 0,
+      req.body.id_shop || 1,
+      req.body.paye || 0,
+      req.body.retour,
+      id
+  ]
   
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json(err);
+      }
+      return res.json(data);
+    });
+  };
 
 exports.deleteCommande = (req, res) => {
     const {id} = req.params;
