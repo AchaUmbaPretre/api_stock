@@ -14,13 +14,30 @@ exports.getDemandeCommandeCount = (req, res) => {
       return res.status(200).json(data);
   })
 }
+
 exports.getDemandeCommande = (req, res) => {
-    const q = "SELECT * FROM detail_commande WHERE est_supprime = 0";
+    const q = `SELECT detail_commande.*, varianteproduit.img 
+                FROM detail_commande 
+                INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit 
+                WHERE detail_commande.est_supprime = 0 GROUP BY id_commande`;
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
         return res.status(200).json(data);
     });
+}
+
+exports.getDemandeCommandeAll = (req, res) => {
+  const {id} = req.params
+  const q = `SELECT detail_commande.*, varianteproduit.img 
+              FROM detail_commande 
+              INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit 
+              WHERE detail_commande.est_supprime = 0 AND detail_commande.id_commande = ?`;
+   
+  db.query(q,id, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
 }
 
 exports.postDemandeCommande = (req, res) => {
@@ -72,6 +89,21 @@ exports.getCommande = (req, res) => {
   });
 }
 
+exports.getCommandeOne = (req, res) => {
+  const {id} = req.params;
+
+  const q = `SELECT *
+            FROM commande
+            INNER JOIN client ON commande.id_client = client.id
+            INNER JOIN statut ON commande.statut = statut.id_statut
+            WHERE commande.est_supprime = 0 AND commande.id_commande = ?`;
+   
+  db.query(q,id, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
 exports.getCommandeCount = (req, res) => {
     const q = "SELECT COUNT(*) AS total FROM commande WHERE est_supprime = 0";
   
@@ -107,8 +139,8 @@ exports.postCommande = (req, res) => {
 
   exports.putCommande = (req, res) => {
     const { id } = req.params;
-    const q = "UPDATE commande SET `id_client` = ?,`statut` = ?,`id_livraison` = ?,`id_paiement` = ?,`user_cr` = ?,`id_shop` = ?,`paye` = ?,`retour` = ? WHERE id = ?";
 
+    const q = "UPDATE commande SET `id_client` = ?, `statut` = ?, `id_livraison` = ?, `id_paiement` = ?, `user_cr` = ?, `id_shop` = ?, `paye` = ?, `retour` = ? WHERE id_commande = ?";
     const values = [
       req.body.id_client,
       req.body.statut,
@@ -119,11 +151,12 @@ exports.postCommande = (req, res) => {
       req.body.paye || 0,
       req.body.retour,
       id
-  ]
-  
+    ];
+
     db.query(q, values, (err, data) => {
       if (err) {
         console.error(err);
+        console.log(err)
         return res.status(500).json(err);
       }
       return res.json(data);

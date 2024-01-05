@@ -171,6 +171,18 @@ exports.putProduit = (req, res) => {
     });
   };
 
+
+//Code variant
+exports.getCodeVariant = (req, res) => {
+
+  const q = `SELECT code_variant FROM varianteproduit GROUP BY code_variant;`
+   
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
  //Variant produit
 exports.getVariantProduit = (req, res) => {
 
