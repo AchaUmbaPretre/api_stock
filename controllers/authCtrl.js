@@ -21,7 +21,7 @@ exports.registerController = async (req, res) =>{
         if (results.length > 0) {
           res.status(409).json("L'utilisateur existe déjà.");
         } else {
-          
+
           const hashedPassword = await bcrypt.hash(password, 10);
 
           const insertQuery = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
@@ -45,7 +45,7 @@ exports.registerController = async (req, res) =>{
 exports.loginController = async (req, res) => {
     const { username, password } = req.body;
 
-    const query = "SELECT * FROM users WHERE username = ?";
+    const query = "SELECT * FROM users WHERE email = ?";
     const values = [username];
   
     db.query(query, values, async (err, results) => {
@@ -72,7 +72,7 @@ exports.loginController = async (req, res) => {
               id: user.id,
               role: user.role,
             },
-            process.env.JWT_SEC,
+            process.env.JWT,
             { expiresIn: "3d" }
           );
   
