@@ -92,8 +92,5 @@ exports.logout = (req, res) => {
     secure: true,
   });
 
-  // Supprimer la clé persist:root
-  delete req.session.persist;
-
   res.status(200).json('Utilisateur est déconnecté');
 };
