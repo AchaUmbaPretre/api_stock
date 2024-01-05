@@ -59,7 +59,7 @@ exports.getLivraisonDetail = (req, res)=>{
   });
 }
 
-exports.getLivraisonOne = (req, res)=>{
+exports.getLivraisonDetailOne = (req, res)=>{
     const {id} = req.params;
     const q = `SELECT * FROM detail_livraison WHERE id_detail_livraison = ?`;
    
