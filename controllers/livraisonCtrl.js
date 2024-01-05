@@ -70,10 +70,16 @@ exports.getLivraisonDetailOne = (req, res)=>{
 }
 
 exports.postLivraisonDetail = (req, res) => {
-    const q = 'INSERT INTO detail_livraison`(`date_livre`, `user_cr`) VALUES(?,?)';
+    const q = 'INSERT INTO detail_livraison`(`id_commande`, `id_varianteProduit`, `qte_livre`, `qte_commande`, `prix`, `package`, `id_package`, `user_cr`) VALUES(?,?,?,?,?,?,?,?)';
     const values = [
-        req.body.date_livre,
-        req.body.user_cr,
+        req.body.id_commande,
+        req.body.id_varianteProduit,
+        req.body.qte_livre,
+        req.body.qte_commande,
+        req.body.prix,
+        req.body.package,
+        req.body.id_package,
+        req.body.user_cr
     ]
     db.query(q, values, (error, data) => {
       if (error) {
