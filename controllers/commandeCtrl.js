@@ -63,6 +63,7 @@ exports.getCommande = (req, res) => {
   const q = `SELECT *
             FROM commande
             INNER JOIN client ON commande.id_client = client.id
+            INNER JOIN statut ON commande.statut = statut.id_statut
             WHERE commande.est_supprime = 0;`;
    
   db.query(q, (error, data) => {
