@@ -29,9 +29,10 @@ exports.getDemandeCommande = (req, res) => {
 
 exports.getDemandeCommandeAll = (req, res) => {
   const {id} = req.params
-  const q = `SELECT detail_commande.*, varianteproduit.img 
+  const q = `SELECT detail_commande.*, varianteproduit.img, taille.taille
               FROM detail_commande 
-              INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit 
+              INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit
+              INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
               WHERE detail_commande.est_supprime = 0 AND detail_commande.id_commande = ?`;
    
   db.query(q,id, (error, data) => {
@@ -41,7 +42,7 @@ exports.getDemandeCommandeAll = (req, res) => {
 }
 
 exports.postDemandeCommande = (req, res) => {
-  const q = 'INSERT INTO detail_commande(`id_commande`, `id_varianteProduit`, `id_client`, `prix`, `statut_demande`, `description`, `quantite`, `user_cr`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+  const q = 'INSERT INTO detail_commande(`id_commande`, `id_varianteProduit`, `id_client`, `prix`, `statut_demande`, `description`,`id_taille`, `quantite`, `user_cr`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
   const values = [
     req.body.id_commande,
@@ -50,6 +51,7 @@ exports.postDemandeCommande = (req, res) => {
     req.body.prix,
     req.body.statut_demande,
     req.body.description,
+    req.body.id_taille,
     req.body.quantite,
     req.body.user_cr
   ];
