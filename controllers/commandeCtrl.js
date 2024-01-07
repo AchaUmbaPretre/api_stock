@@ -16,9 +16,11 @@ exports.getDemandeCommandeCount = (req, res) => {
 }
 
 exports.getDemandeCommande = (req, res) => {
-    const q = `SELECT detail_commande.*, varianteproduit.img 
+    const q = `SELECT detail_commande.*, varianteproduit.img, taille.taille, users.username
                 FROM detail_commande 
-                INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit 
+                INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit
+                INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+                INNER JOIN users ON detail_commande.user_cr = users.id 
                 WHERE detail_commande.est_supprime = 0 GROUP BY id_commande`;
      
     db.query(q, (error, data) => {
