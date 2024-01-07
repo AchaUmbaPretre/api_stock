@@ -29,6 +29,7 @@ exports.postLivraison = (req, res) => {
         req.body.user_cr,
     ]
     db.query(q, values, (error, data) => {
+      console.log(error)
       if (error) {
         res.status(500).json(error);
         console.log(error);
@@ -49,7 +50,6 @@ exports.deleteLivraison = (req, res) => {
 }
 
 //Detail livraison
-
 exports.getLivraisonDetail = (req, res)=>{
     const q = `SELECT * FROM detail_livraison`;
    
