@@ -71,7 +71,8 @@ exports.postDemandeCommande = (req, res) => {
 
 exports.deleteDemandeCommande = (req, res) => {
     const {id} = req.params;
-    const q = "DELETE FROM detail_commande WHERE id_detail_commande = ?"
+    console.log(id)
+    const q = "DELETE FROM detail_commande WHERE id_detail = ?"
   
     db.query(q, [id], (err, data)=>{
         if (err) return res.send(err);
