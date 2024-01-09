@@ -45,9 +45,24 @@ exports.getDemandeCommandeAll = (req, res) => {
 }
 
 exports.postDemandeCommande = (req, res) => {
-  const q = 'INSERT INTO detail_commande(`id_commande`, `id_varianteProduit`, `id_client`, `prix`, `statut_demande`, `description`,`id_taille`, `quantite`, `user_cr`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const selectQuery = `
+    SELECT id_commande, id_varianteProduit, id_client, prix, statut_demande, description, id_taille, quantite, user_cr
+    FROM detail_commande
+    WHERE id_varianteProduit = ? AND id_taille = ?
+  `;
 
-  const values = [
+  const insertQuery = `
+    INSERT INTO detail_commande(id_commande, id_varianteProduit, id_client, prix, statut_demande, description, id_taille, quantite, user_cr)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const updateQuery = `
+  UPDATE detail_commande
+  SET quantite = quantite + ?, prix = prix + ?
+  WHERE id_varianteProduit = ? AND id_taille = ?
+`;
+  const selectValues = [req.body.id_varianteProduit, req.body.id_taille];
+  const insertValues = [
     req.body.id_commande,
     req.body.id_varianteProduit,
     req.body.id_client,
@@ -58,13 +73,40 @@ exports.postDemandeCommande = (req, res) => {
     req.body.quantite,
     req.body.user_cr
   ];
+  const updateValues = [
+    req.body.quantite,
+    req.body.prix,
+    req.body.id_varianteProduit,
+    req.body.id_taille
+  ];
 
-  db.query(q, values, (error, data) => {
+  db.query(selectQuery, selectValues, (error, rows) => {
     if (error) {
       res.status(500).json(error);
       console.log(error);
+      return;
+    }
+
+    if (rows.length === 0) {
+      // Aucune ligne trouvée, effectuer une insertion
+      db.query(insertQuery, insertValues, (error, data) => {
+        if (error) {
+          res.status(500).json(error);
+          console.log(error);
+        } else {
+          res.json('Processus réussi');
+        }
+      });
     } else {
-      res.json('Processus réussi');
+      // Ligne trouvée, effectuer une mise à jour
+      db.query(updateQuery, updateValues, (error, data) => {
+        if (error) {
+          res.status(500).json(error);
+          console.log(error);
+        } else {
+          res.json('Processus réussi');
+        }
+      });
     }
   });
 };
