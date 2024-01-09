@@ -4,7 +4,9 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.getLivraison = (req, res)=>{
-    const q = `SELECT * FROM livraison`;
+    const q = `SELECT livraison.*, users.username FROM livraison 
+                INNER JOIN users ON livraison.user_cr = users.id
+              `;
    
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
