@@ -24,12 +24,12 @@ exports.getLivreur = (req, res) => {
 }
 
 exports.postLivreur = (req, res) => {
-    const q = 'INSERT INTO livreur(`nom`, `prenom`, `numero`, `adresse`,`email`) VALUES(?,?,?,?,?)';
+    const q = 'INSERT INTO livreur(`nom`, `prenom`, `telephone`, `adresse`,`email`) VALUES(?,?,?,?,?)';
   
     const values = [
         req.body.nom,
         req.body.prenom,
-        req.body.numero,
+        req.body.telephone,
         req.body.adresse,
         req.body.email
     ]
@@ -56,11 +56,11 @@ exports.deleteLivreur = (req, res) => {
 
 exports.putLivreur = (req, res) => {
     const livreurId = req.params.id;
-    const q = "UPDATE livreur SET `nom`= ?, `numero`= ?, `adresse`= ?, `email`= ? WHERE id_livreur = ?"
+    const q = "UPDATE livreur SET `nom`= ?, `telephone`= ?, `adresse`= ?, `email`= ? WHERE id_livreur = ?"
     const values = [
         req.body.nom,
         req.body.numero,
-        req.body.adresse,
+        req.body.telephone,
         req.body.email
     ]
   
