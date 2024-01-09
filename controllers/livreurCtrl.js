@@ -1,7 +1,6 @@
-const { db } = require("../db.js");
+const { db } = require("./../config/db.js");
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
-const moment = require('moment');
 
 dotenv.config();
 
@@ -57,7 +56,7 @@ exports.deleteLivreur = (req, res) => {
 
 exports.putLivreur = (req, res) => {
     const livreurId = req.params.id;
-    const q = "UPDATE clients SET `nom`= ?, `numero`= ?, `adresse`= ?, `email`= ? WHERE id_livreur = ?"
+    const q = "UPDATE livreur SET `nom`= ?, `numero`= ?, `adresse`= ?, `email`= ? WHERE id_livreur = ?"
     const values = [
         req.body.nom,
         req.body.numero,

@@ -7,8 +7,9 @@ const userRoutes = require('./routes/userRoutes');
 const produitRoutes = require('./routes/produitRoutes');
 const inventaireRoutes = require('./routes/inventaireRoutes');
 const clientRoutes = require('./routes/clientRoutes');
-const commandeRoutes = require('./routes/commandeRoutes')
-const livraisonRoutes = require('./routes/livraisonRoutes')
+const commandeRoutes = require('./routes/commandeRoutes');
+const livraisonRoutes = require('./routes/livraisonRoutes');
+const livreurRoutes = require('./routes/livreurRoutes');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -21,6 +22,8 @@ app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(express.json());
 
+app.setMaxListeners(0);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/client", clientRoutes);
@@ -28,6 +31,7 @@ app.use('/api/produit', produitRoutes);
 app.use('/api/inventaire', inventaireRoutes);
 app.use('/api/commande', commandeRoutes);
 app.use('/api/livraison', livraisonRoutes);
+app.use('/api/livreur', livreurRoutes);
 
 const port = process.env.PORT || 8080;
 
