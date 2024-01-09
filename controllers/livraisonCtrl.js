@@ -51,7 +51,9 @@ exports.deleteLivraison = (req, res) => {
 
 //Detail livraison
 exports.getLivraisonDetail = (req, res)=>{
-    const q = `SELECT * FROM detail_livraison`;
+    const q = `SELECT detail_livraison.*,varianteproduit.img  FROM detail_livraison
+                INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              `;
    
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
@@ -70,26 +72,53 @@ exports.getLivraisonDetailOne = (req, res)=>{
 }
 
 exports.postLivraisonDetail = (req, res) => {
-    const q = 'INSERT INTO detail_livraison`(`id_commande`, `id_varianteProduit`, `qte_livre`, `qte_commande`, `prix`, `package`, `id_package`, `user_cr`) VALUES(?,?,?,?,?,?,?,?)';
-    const values = [
-        req.body.id_commande,
-        req.body.id_varianteProduit,
-        req.body.qte_livre,
-        req.body.qte_commande,
-        req.body.prix,
-        req.body.package,
-        req.body.id_package,
-        req.body.user_cr
-    ]
-    db.query(q, values, (error, data) => {
-      if (error) {
-        res.status(500).json(error);
-        console.log(error);
+  const getIdCommandeQuery = 'SELECT prix, quantite FROM detail_commande WHERE id_varianteProduit = ?';
+
+  const idVarianteProduit = req.body.id_varianteProduit;
+  const quantiteLivre = req.body.qte_livre;
+
+  db.query(getIdCommandeQuery, [idVarianteProduit], (error, results) => {
+    if (error) {
+      res.status(500).json(error);
+      console.log(error);
+    } else {
+      if (results.length > 0) {
+        const prixUnitaire = results[0].prix;
+        const quantiteCommande = results[0].quantite;
+        const prixTotal = (prixUnitaire / quantiteCommande) * quantiteLivre;
+
+        const insertQuery = 'INSERT INTO detail_livraison (id_commande, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package, user_cr) VALUES (?,?,?,?,?,?,?,?)';
+
+        const values = [
+          req.body.id_commande,
+          idVarianteProduit,
+          quantiteLivre,
+          req.body.qte_commande,
+          prixTotal,
+          req.body.package,
+          req.body.id_package,
+          req.body.user_cr
+        ];
+
+        db.query(insertQuery, values, (insertError, insertData) => {
+          if (insertError) {
+            res.status(500).json(insertError);
+            console.log(insertError);
+          } else {
+            // Actions supplémentaires après l'insertion des données
+            // Par exemple, mettre à jour d'autres tables
+            // ou envoyer une réponse JSON
+            // ou effectuer d'autres opérations logiques
+
+            res.json('Processus réussi');
+          }
+        });
       } else {
-        res.json('Processus réussi');
+        res.status(404).json('Prix ou quantité non trouvés pour l\'id_varianteProduit spécifié');
       }
-    });
-  };
+    }
+  });
+};
 
 exports.deleteLivraisonDetail = (req, res) => {
     const {id} = req.params;
