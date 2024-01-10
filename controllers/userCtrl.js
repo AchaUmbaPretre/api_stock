@@ -17,6 +17,18 @@ exports.getUser = (req, res) => {
   
 }
 
+exports.getUserOne = (req, res) => {
+  const {id} = req.params;
+
+  const q = `SELECT * FROM users WHERE id = ?;`
+   
+  db.query(q,id, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+
+}
+
 exports.deleteUser = (req, res) => {
     const {id} = req.params;
     const q = "DELETE FROM users WHERE id = ?"
@@ -27,22 +39,18 @@ exports.deleteUser = (req, res) => {
     })
   }
 
-  exports.putUser = (req, res) => {
+  exports.putUser = async (req, res) => {
     const { id } = req.params;
-
+  
     const q = "UPDATE users SET `username` = ?, `email` = ?, `password` = ?, `role` = ? WHERE id = ?";
     const values = [
-      req.body.id_client,
-      req.body.statut,
-      req.body.id_livraison || 0,
-      req.body.id_paiement || 0,
-      req.body.user_cr || 0,
-      req.body.id_shop || 1,
-      req.body.paye || 0,
-      req.body.retour,
+      req.body.username,
+      req.body.email,
+      await bcrypt.hash(req.body.password, 10), // Crypte le nouveau mot de passe avec bcrypt
+      req.body.role,
       id
     ];
-
+  
     db.query(q, values, (err, data) => {
       if (err) {
         console.error(err);
