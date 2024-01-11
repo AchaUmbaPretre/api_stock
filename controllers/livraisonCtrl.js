@@ -140,7 +140,7 @@ exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;
   const q = `SELECT detail_livraison.*,varianteproduit.img  FROM detail_livraison
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
-              WHERE user_cr = ?
+              WHERE id_livreur = ?
             `;
  
 db.query(q,id, (error, data) => {
@@ -151,11 +151,14 @@ db.query(q,id, (error, data) => {
 
 exports.getLivraisonUserDetail = (req, res)=>{
   const {id} = req.params;
-  const q = `SELECT detail_livraison.*,varianteproduit.img, users.username,detail_commande.id_taille FROM detail_livraison
+  const q = `SELECT detail_livraison.*,varianteproduit.img, users.username, taille.taille, marque.nom FROM detail_livraison
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
               INNER JOIN users ON detail_livraison.user_cr = users.id
-              INNER JOIN detail_commande ON detail_livraison.id_varianteProduit = detail_commande.id_varianteProduit
-              WHERE detail_livraison.id_varianteProduit = ?
+              INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
+              INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+              INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+              INNER JOIN marque ON produit.id_marque = marque.id_marque
+            WHERE detail_livraison.id_varianteProduit = ?
             `;
  
 db.query(q,id, (error, data) => {

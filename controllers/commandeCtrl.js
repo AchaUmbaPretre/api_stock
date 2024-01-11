@@ -73,6 +73,7 @@ exports.postDemandeCommande = (req, res) => {
     req.body.quantite,
     req.body.user_cr
   ];
+  console.log(insertValues)
   const updateValues = [
     req.body.quantite,
     req.body.prix,
