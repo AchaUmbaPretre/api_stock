@@ -5,7 +5,18 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.getVente = (req, res) => {
-    const q = "SELECT * FROM vente WHERE est_supprime = 0";
+    const q = `
+    SELECT vente.*, users.username, varianteproduit.img, client.nom AS nom_client, marque.nom AS nom_marque, taille.taille AS pointure
+        FROM vente
+    INNER JOIN users ON vente.id_livreur = users.id
+    INNER JOIN detail_commande ON vente.id_detail_commande = detail_commande.id_detail
+    INNER JOIN varianteproduit ON varianteproduit.id_varianteProduit = detail_commande.id_varianteProduit
+    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+    INNER JOIN marque ON produit.id_marque = marque.id_marque
+    INNER JOIN client ON detail_commande.id_client = client.id
+    INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+        WHERE vente.est_supprime = 0 
+    `;
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
@@ -14,13 +25,14 @@ exports.getVente = (req, res) => {
 }
 
 exports.postVente = (req, res) => {
-    const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`,`prix_unitaire`) VALUES(?,?,?,?,?)';
+    const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`, `id_detail_commande`,`prix_unitaire`) VALUES(?,?,?,?,?,?)';
   
     const values = [
         req.body.id_client,
         req.body.id_livreur,
         req.body.quantite,
         req.body.id_commande,
+        req.body.id_detail_commande,
         req.body.prix_unitaire
     ]
     db.query(q, values, (error, data) => {
