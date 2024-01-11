@@ -14,7 +14,7 @@ exports.getVente = (req, res) => {
 }
 
 exports.postVente = (req, res) => {
-    const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`,`	prix_unitaire`) VALUES(?,?,?,?,?)';
+    const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`,`prix_unitaire`) VALUES(?,?,?,?,?)';
   
     const values = [
         req.body.id_client,
