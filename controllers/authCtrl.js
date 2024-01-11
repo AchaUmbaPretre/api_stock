@@ -51,6 +51,7 @@ exports.loginController = async (req, res) => {
     db.query(query, values, async (err, results) => {
       if (err) {
         res.status(500).json(err);
+        console.log(err)
       } else {
         const user = results[0];
   

@@ -46,7 +46,7 @@ exports.deleteUser = (req, res) => {
     const values = [
       req.body.username,
       req.body.email,
-      await bcrypt.hash(req.body.password, 10), // Crypte le nouveau mot de passe avec bcrypt
+      req.body.password,
       req.body.role,
       id
     ];
