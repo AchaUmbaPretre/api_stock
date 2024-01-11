@@ -1,5 +1,5 @@
 const express = require("express");
-const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail } = require("../controllers/livraisonCtrl");
+const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail, getLivraisonUser, getLivraisonUserDetail } = require("../controllers/livraisonCtrl");
 const router = express.Router();
 
 
@@ -14,6 +14,10 @@ router.get("/livraisonDetail", getLivraisonDetail);
 router.get("/livraisonDetailOne/:id", getLivraisonDetailOne);
 router.post("/livraisonDetail", postLivraisonDetail);
 router.delete("/livraisonDelete/:id", deleteLivraisonDetail);
+
+//livraison utilisateur
+router.get("/livraison-user/:id",getLivraisonUser)
+router.get("/livraison-user-detail/:id",getLivraisonUserDetail)
 
 
 module.exports = router;

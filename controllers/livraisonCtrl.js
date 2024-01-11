@@ -89,7 +89,7 @@ exports.postLivraisonDetail = (req, res) => {
         const quantiteCommande = results[0].quantite;
         const prixTotal = (prixUnitaire / quantiteCommande) * quantiteLivre;
 
-        const insertQuery = 'INSERT INTO detail_livraison (id_commande, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package, user_cr) VALUES (?,?,?,?,?,?,?,?)';
+        const insertQuery = 'INSERT INTO detail_livraison (id_commande, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package,	id_livreur, id_detail_commande, user_cr) VALUES (?,?,?,?,?,?,?,?,?,?)';
 
         const values = [
           req.body.id_commande,
@@ -99,6 +99,8 @@ exports.postLivraisonDetail = (req, res) => {
           prixTotal,
           req.body.package,
           req.body.id_package,
+          req.body.id_livreur,
+          req.body.id_detail_commande,
           req.body.user_cr
         ];
 
@@ -130,4 +132,34 @@ exports.deleteLivraisonDetail = (req, res) => {
         if (err) return res.send(err);
       return res.json(data);
     })
+}
+
+//livraison utilisateur
+
+exports.getLivraisonUser = (req, res)=>{
+  const {id} = req.params;
+  const q = `SELECT detail_livraison.*,varianteproduit.img  FROM detail_livraison
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              WHERE user_cr = ?
+            `;
+ 
+db.query(q,id, (error, data) => {
+    if (error) res.status(500).send(error);
+    return res.status(200).json(data);
+});
+}
+
+exports.getLivraisonUserDetail = (req, res)=>{
+  const {id} = req.params;
+  const q = `SELECT detail_livraison.*,varianteproduit.img, users.username,detail_commande.id_taille FROM detail_livraison
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              INNER JOIN users ON detail_livraison.user_cr = users.id
+              INNER JOIN detail_commande ON detail_livraison.id_varianteProduit = detail_commande.id_varianteProduit
+              WHERE detail_livraison.id_varianteProduit = ?
+            `;
+ 
+db.query(q,id, (error, data) => {
+    if (error) res.status(500).send(error);
+    return res.status(200).json(data);
+});
 }
