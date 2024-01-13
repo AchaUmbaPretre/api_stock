@@ -764,10 +764,11 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 //mouvement
 exports.getMouvement = (req, res) => {
   const q = `SELECT mouvement_stock.*,varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement,
-    produit.nom_produit 
+    produit.nom_produit, taille.taille
       FROM mouvement_stock 
     INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
     INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
+    INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
     INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit;`;
 
   db.query(q, (error, data) => {
@@ -795,13 +796,13 @@ exports.postMouvement = (req, res) => {
   const qStocke = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
   const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_produit = ? AND id_taille = ? AND id_couleur = ?`;
   const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
-  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_utilisateur`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
 
   const values = [ 
     req.body.id_varianteProduit,
     req.body.id_type_mouvement,
     req.body.quantite,
-    req.body.id_utilisateur,
+    req.body.id_user_cr,
     req.body.id_client,
     req.body.id_fournisseur,
     req.body.description

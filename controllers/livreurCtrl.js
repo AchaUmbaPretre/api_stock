@@ -15,7 +15,7 @@ exports.getLivreurCount = (req, res) => {
 }
 
 exports.getLivreur = (req, res) => {
-    const q = "SELECT * FROM livreur WHERE est_supprime = 0";
+    const q = "SELECT * FROM users WHERE role = 'livreur'";
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
@@ -69,3 +69,24 @@ exports.putLivreur = (req, res) => {
         return res.json(data);
       });
 }
+
+//statut commande
+exports.putStatutCommande = (req, res) => {
+    const {id} = req.params;
+    const q = "UPDATE commande SET id_livraison = 1 WHERE id_commande = ?";
+  
+    db.query(q, [id], (err, data) => {
+      if (err) return res.send(err);
+      return res.json(data);
+    });
+  };
+
+exports.putStatutCommandeLivre = (req, res) => {
+    const {id} = req.params;
+    const q = "UPDATE commande SET id_livraison = 2 WHERE id_commande = ?";
+  
+    db.query(q, [id], (err, data) => {
+      if (err) return res.send(err);
+      return res.json(data);
+    });
+  };

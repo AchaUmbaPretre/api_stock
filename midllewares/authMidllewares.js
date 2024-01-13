@@ -22,3 +22,5 @@ exports.authMid = async (req, res, next) => {
         });
     }
 };
+
+const StatutLivre = "UPDATE commande SET id_livraison = 2, statut = 1 WHERE id_commande = ?";

@@ -109,11 +109,6 @@ exports.postLivraisonDetail = (req, res) => {
             res.status(500).json(insertError);
             console.log(insertError);
           } else {
-            // Actions supplémentaires après l'insertion des données
-            // Par exemple, mettre à jour d'autres tables
-            // ou envoyer une réponse JSON
-            // ou effectuer d'autres opérations logiques
-
             res.json('Processus réussi');
           }
         });
@@ -135,12 +130,13 @@ exports.deleteLivraisonDetail = (req, res) => {
 }
 
 //livraison utilisateur
-
 exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;
-  const q = `SELECT detail_livraison.*,varianteproduit.img  FROM detail_livraison
+
+  const q = `SELECT detail_livraison.*,varianteproduit.img FROM detail_livraison
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
-              WHERE id_livreur = ?
+              INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
+              WHERE vu_livreur = 0 AND id_livreur = ?
             `;
  
 db.query(q,id, (error, data) => {
@@ -155,7 +151,7 @@ exports.getLivraisonUserDetail = (req, res)=>{
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
               INNER JOIN users ON detail_livraison.user_cr = users.id
               INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
-              INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
               INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
               INNER JOIN marque ON produit.id_marque = marque.id_marque
             WHERE detail_livraison.id_varianteProduit = ?
@@ -165,4 +161,16 @@ db.query(q,id, (error, data) => {
     if (error) res.status(500).send(error);
     return res.status(200).json(data);
 });
+}
+
+//Vu livreur
+exports.putLivraisonVuLivreur = (req, res) => {
+  const {id} = req.params;
+  const q = "UPDATE detail_livraison SET vu_livreur = 1 WHERE id_commande = ?";
+
+  db.query(q, [id], (err, data) => {
+      if (err) return res.send(err);
+      console.log(err)
+      return res.json(data);
+    });
 }
