@@ -25,7 +25,7 @@ exports.getVente = (req, res) => {
 }
 
 exports.postVente = (req, res) => {
-    const StatutLivre = "UPDATE commande SET id_livraison = 2 WHERE id_commande = ?";
+    const StatutLivre = "UPDATE commande SET statut = 1, id_livraison = 2 WHERE id_commande = ?";
     const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
     const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
     const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';

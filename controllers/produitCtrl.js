@@ -763,15 +763,47 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 
 //mouvement
 exports.getMouvement = (req, res) => {
-  const q = `SELECT mouvement_stock.*,varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement,
-    produit.nom_produit, taille.taille
-      FROM mouvement_stock 
-    INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
-    INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
-    INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit;`;
+  const q = `SELECT mouvement_stock.*, varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement, produit.nom_produit, taille.taille FROM mouvement_stock 
+  INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
+  INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
+  INNER JOIN detail_commande ON mouvement_stock.id_varianteProduit = detail_commande.id_varianteProduit 
+  INNER JOIN taille ON detail_commande.id_taille = taille.id_taille 
+  INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+    WHERE detail_commande.est_supprime = 0 
+    GROUP BY varianteproduit.id_varianteproduit;`;
 
   db.query(q, (error, data) => {
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const mouvementData = data.map(mouvement => {
+      let signe = "";
+      if (mouvement.id_type_mouvement === 1) {
+        signe = "+";
+      } else if (mouvement.id_type_mouvement === 2) {
+        signe = "-";
+      }
+      mouvement.quantite = `${signe}${mouvement.quantite}`;
+      return mouvement;
+    });
+
+    return res.status(200).json(mouvementData);
+  });
+};
+
+exports.getMouvementOne = (req, res) => {
+  const {id} = req.params;
+
+  const q = `SELECT mouvement_stock.*, varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement, taille.taille FROM mouvement_stock 
+  INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
+  INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
+  INNER JOIN detail_commande ON mouvement_stock.id_varianteProduit = detail_commande.id_varianteProduit 
+  INNER JOIN taille ON detail_commande.id_taille = taille.id_taille 
+    WHERE mouvement_stock.id_varianteProduit = ?
+    GROUP BY taille.id_taille`;
+
+  db.query(q,[id], (error, data) => {
     if (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -862,7 +894,7 @@ exports.postMouvement = (req, res) => {
 
 exports.deleteMouvement = (req, res) => {
   const {id} = req.params;
-  const q = "DELETE FROM mouvement WHERE id_mouvement = ?"
+  const q = "DELETE FROM mouvement_stock  WHERE id_mouvement = ?"
 
   db.query(q, [id], (err, data)=>{
       if (err) return res.send(err);
