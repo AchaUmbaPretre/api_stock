@@ -1,5 +1,5 @@
 const express = require("express");
-const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail, getLivraisonUser, getLivraisonUserDetail, putLivraisonVuLivreur } = require("../controllers/livraisonCtrl");
+const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail, getLivraisonUser, getLivraisonUserDetail, putLivraisonVuLivreur, getLivraisonUserOne } = require("../controllers/livraisonCtrl");
 const router = express.Router();
 
 
@@ -17,6 +17,7 @@ router.delete("/livraisonDelete/:id", deleteLivraisonDetail);
 
 //livraison utilisateur
 router.get("/livraison-user/:id",getLivraisonUser)
+router.get("/livraison-userOne/:id",getLivraisonUserOne)
 router.get("/livraison-user-detail/:id",getLivraisonUserDetail)
 
 router.put("/vuLivreur/:id",putLivraisonVuLivreur)

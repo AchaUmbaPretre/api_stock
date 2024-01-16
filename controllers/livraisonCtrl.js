@@ -133,13 +133,33 @@ exports.deleteLivraisonDetail = (req, res) => {
 exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;
 
-  const q = `SELECT detail_livraison.*,varianteproduit.img FROM detail_livraison
-              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
-              INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
-              WHERE vu_livreur = 0 AND id_livreur = ?
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone FROM detail_livraison
+                INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+                INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
+                INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande 
+                INNER JOIN client ON commande.id_client = client.id
+            WHERE vu_livreur = 0 AND id_livreur = ?
             `;
  
 db.query(q,id, (error, data) => {
+    if (error) res.status(500).send(error);
+    return res.status(200).json(data);
+});
+}
+
+exports.getLivraisonUserOne = (req, res)=>{
+  const {id} = req.params;
+  const idCommande = req.query.id_commande
+
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone  FROM detail_livraison 
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit 
+              INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail 
+              INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
+              INNER JOIN client ON commande.id_client = client.id
+              WHERE vu_livreur = 0 AND id_livreur = ${id} AND commande.id_commande = ${idCommande};
+            `;
+ 
+db.query(q,(error, data) => {
     if (error) res.status(500).send(error);
     return res.status(200).json(data);
 });
