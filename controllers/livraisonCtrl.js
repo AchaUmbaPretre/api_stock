@@ -89,10 +89,11 @@ exports.postLivraisonDetail = (req, res) => {
         const quantiteCommande = results[0].quantite;
         const prixTotal = (prixUnitaire / quantiteCommande) * quantiteLivre;
 
-        const insertQuery = 'INSERT INTO detail_livraison (id_commande, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package,	id_livreur, id_detail_commande, user_cr) VALUES (?,?,?,?,?,?,?,?,?,?)';
+        const insertQuery = 'INSERT INTO detail_livraison (id_commande, quantite_prix, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package,	id_livreur, id_detail_commande, user_cr) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
 
         const values = [
           req.body.id_commande,
+          req.body.quantite_prix,
           idVarianteProduit,
           quantiteLivre,
           req.body.qte_commande,
@@ -133,7 +134,7 @@ exports.deleteLivraisonDetail = (req, res) => {
 exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;
 
-  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone FROM detail_livraison
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone, client.id AS id_client FROM detail_livraison
                 INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
                 INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
                 INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande 
