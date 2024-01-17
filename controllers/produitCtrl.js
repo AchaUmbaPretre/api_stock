@@ -769,8 +769,7 @@ exports.getMouvement = (req, res) => {
   INNER JOIN detail_commande ON mouvement_stock.id_varianteProduit = detail_commande.id_varianteProduit 
   INNER JOIN taille ON detail_commande.id_taille = taille.id_taille 
   INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-    WHERE detail_commande.est_supprime = 0 
-    GROUP BY varianteproduit.id_varianteproduit;`;
+    WHERE detail_commande.est_supprime = 0 `;
 
   db.query(q, (error, data) => {
     if (error) {

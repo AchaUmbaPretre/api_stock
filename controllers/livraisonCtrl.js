@@ -73,8 +73,12 @@ exports.getLivraisonDetailOne = (req, res)=>{
   });
 }
 
-exports.postLivraisonDetail = (req, res) => {
+/* exports.postLivraisonDetail = (req, res) => {
   const getIdCommandeQuery = 'SELECT prix, quantite FROM detail_commande WHERE id_varianteProduit = ?';
+  const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
+  const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
+  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+
 
   const idVarianteProduit = req.body.id_varianteProduit;
   const quantiteLivre = req.body.qte_livre;
@@ -118,6 +122,109 @@ exports.postLivraisonDetail = (req, res) => {
       }
     }
   });
+}; */
+
+exports.postLivraisonDetail = (req, res) => {
+  const StatutLivre = "UPDATE commande SET statut = 1, id_livraison = 2 WHERE id_commande = ?";
+  const getIdCommandeQuery = 'SELECT prix, quantite FROM detail_commande WHERE id_varianteProduit = ?';
+  const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
+  const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
+  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+
+  const valuesMouv = [
+    req.body.id_varianteProduit,
+    req.body.id_type_mouvement,
+    req.body.quantite,
+    req.body.id_user_cr,
+    req.body.id_client,
+    req.body.id_fournisseur,
+    req.body.description
+]
+  
+  const idVarianteProduit = req.body.id_varianteProduit;
+  const quantiteLivre = req.body.qte_livre;
+
+  db.query(qStockeTaille,[idVarianteProduit],(error, stockTailleData) =>{
+    if (error){
+      res.status(500).json(error);
+      console.log(error);
+    }
+    else{
+      const stockTailleActuel = stockTailleData[0].stock
+
+      let newStockTaille;
+
+      if (parseInt(req.body.id_type_mouvement) === 13) {
+        newStockTaille = stockTailleActuel
+      } else if (parseInt(req.body.id_type_mouvement) === 12) {
+        newStockTaille = stockTailleActuel - parseInt(req.body.quantite);
+        if (newStockTaille > stockTailleActuel) {
+          res.status(400).json({ error: 'Quantité de stock insuffisante ou taille invalide.' });
+          return;
+        }
+        if (newStockTaille < 0) {
+          res.status(400).json({ error: 'Quantité de stock insuffisante.' });
+          return;
+        }
+    } else{
+        newStockTaille = stockTailleActuel
+    }
+
+    db.query(qUpdateStock, [newStockTaille, req.body.id_varianteProduit], (error, updateData) =>{
+      if (error) {
+        res.status(500).json(error);
+        console.log(error);
+      } else {
+        db.query(qInsertMouvement, valuesMouv, (error, mouvementData) =>{
+          if (error) {
+            res.status(500).json(error);
+            console.log(error);
+          } else {
+            db.query(getIdCommandeQuery, [idVarianteProduit], (error, results) =>{
+                if (error) {
+                    res.status(500).json(error);
+                    console.log(error);
+                  } else {
+                    if (results.length > 0) {
+                      const prixUnitaire = results[0].prix;
+                      const quantiteCommande = results[0].quantite;
+                      const prixTotal = (prixUnitaire / quantiteCommande) * quantiteLivre;
+              
+                      const insertQuery = 'INSERT INTO detail_livraison (id_commande, quantite_prix, id_varianteProduit, qte_livre, qte_commande, prix, package, id_package,	id_livreur, id_detail_commande, user_cr) VALUES (?,?,?,?,?,?,?,?,?,?,?)';
+              
+                      const values = [
+                        req.body.id_commande,
+                        req.body.quantite_prix,
+                        idVarianteProduit,
+                        quantiteLivre,
+                        req.body.qte_commande,
+                        prixTotal,
+                        req.body.package,
+                        req.body.id_package,
+                        req.body.id_livreur,
+                        req.body.id_detail_commande,
+                        req.body.user_cr
+                      ];
+              
+                      db.query(insertQuery, values, (insertError, insertData) => {
+                        if (insertError) {
+                          res.status(500).json(insertError);
+                          console.log(insertError);
+                        } else {
+                          res.json('Processus réussi');
+                        }
+                      });
+                    } else {
+                      res.status(404).json('Prix ou quantité non trouvés pour l\'id_varianteProduit spécifié');
+                    }
+                  }
+            })
+        }
+        })
+      }
+    })
+    }
+  })
 };
 
 exports.deleteLivraisonDetail = (req, res) => {
@@ -139,7 +246,7 @@ exports.getLivraisonUser = (req, res)=>{
                 INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
                 INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande 
                 INNER JOIN client ON commande.id_client = client.id
-            WHERE vu_livreur = 0 AND id_livreur = ?
+            WHERE vu_livreur = 0 AND id_livreur = ? GROUP BY commande.id_commande
             `;
  
 db.query(q,id, (error, data) => {

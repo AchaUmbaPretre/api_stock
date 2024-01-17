@@ -48,62 +48,26 @@ exports.postVente = (req, res) => {
         req.body.id_fournisseur,
         req.body.description
     ]
-
     db.query(q, values, (error, data) => {
       if (error) {
         res.status(500).json(error);
         console.log(error);
       } else {
-        
-        db.query(qStockeTaille, [req.body.id_varianteProduit], (error, stockTailleData) => {
-            if (error) {
-                res.status(500).json(error);
-                console.log(error);
-            } else {
-                const stockTailleActuel = stockTailleData[0].stock
-
-                let newStockTaille;
-
-                if (parseInt(req.body.id_type_mouvement) === 13) {
-                    newStockTaille = stockTailleActuel
-                  } else if (parseInt(req.body.id_type_mouvement) === 12) {
-                    newStockTaille = stockTailleActuel - parseInt(req.body.quantite);
-                    if (newStockTaille > stockTailleActuel) {
-                      res.status(400).json({ error: 'Quantité de stock insuffisante ou taille invalide.' });
-                      return;
-                    }
-                    if (newStockTaille < 0) {
-                      res.status(400).json({ error: 'Quantité de stock insuffisante.' });
-                      return;
-                    }
-                } else{
-                    newStockTaille = stockTailleActuel
-                }
-
-                db.query(qUpdateStock, [newStockTaille, req.body.id_varianteProduit], (error, updateData) => {
-                    if (error) {
+        db.query(qInsertMouvement, valuesMouv, (error, mouvementData) => {
+          if (error) {
+            res.status(500).json(error);
+            console.log(error);
+          } else {
+              db.query(StatutLivre, [req.body.id_commande,], (error, updateData) =>{
+                  if (error) {
                       res.status(500).json(error);
                       console.log(error);
                     } else {
-                      db.query(qInsertMouvement, valuesMouv, (error, mouvementData) => {
-                        if (error) {
-                          res.status(500).json(error);
-                          console.log(error);
-                        } else {
-                            db.query(StatutLivre, [req.body.id_commande,], (error, updateData) =>{
-                                if (error) {
-                                    res.status(500).json(error);
-                                    console.log(error);
-                                  } else {
-                                    res.json('Processus réussi');
-                                  }
-                            })
-                        }
-                      });
+                      res.json('Processus réussi');
                     }
-                  });
-            }
-        })
+              })
+          }
+        });
       }
     });
     
