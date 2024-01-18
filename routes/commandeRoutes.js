@@ -1,5 +1,5 @@
 const express = require("express");
-const { getDemandeCommande, getDemandeCommandeCount, postDemandeCommande, deleteDemandeCommande, getCommandeCount, getCommande, postCommande, deleteCommande, getStatus, putCommande, getCommandeOne, getDemandeCommandeAll } = require("../controllers/commandeCtrl");
+const { getDemandeCommande, getDemandeCommandeCount, postDemandeCommande, deleteDemandeCommande, getCommandeCount, getCommande, postCommande, deleteCommande, getStatus, putCommande, getCommandeOne, getDemandeCommandeAll, getIdVariantProduit } = require("../controllers/commandeCtrl");
 const router = express.Router();
 
 //commande
@@ -14,6 +14,8 @@ router.delete('/commande/:id', deleteCommande)
 router.get('/statut', getStatus)
 
 //Taille Commande
+router.get('/idVariantproduit/:idCode/:idTaille',getIdVariantProduit)
+
 router.get('/detail-commande', getDemandeCommande)
 router.get('/detail-commande/:id', getDemandeCommandeAll)
 router.get('/detail-commandeCount', getDemandeCommandeCount)

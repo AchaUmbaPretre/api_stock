@@ -4,8 +4,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.getLivraison = (req, res)=>{
-    const q = `SELECT livraison.*, users.username FROM livraison 
-                INNER JOIN users ON livraison.user_cr = users.id
+    const q = `SELECT livraison.*, users.username FROM livraison
+                  INNER JOIN users ON livraison.user_cr = users.id
               `;
    
   db.query(q, (error, data) => {
@@ -53,10 +53,15 @@ exports.deleteLivraison = (req, res) => {
 
 //Detail livraison
 exports.getLivraisonDetail = (req, res)=>{
-    const q = `SELECT detail_livraison.*,varianteproduit.img  FROM detail_livraison
-                INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure FROM detail_livraison
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
+              INNER JOIN client ON commande.id_client = client.id
+              INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+              INNER JOIN marque ON produit.id_marque = marque.id_marque
+              INNER JOIN users ON detail_livraison.id_livreur  = users.id
+              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
               `;
-   
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
       return res.status(200).json(data);
@@ -65,7 +70,16 @@ exports.getLivraisonDetail = (req, res)=>{
 
 exports.getLivraisonDetailOne = (req, res)=>{
     const {id} = req.params;
-    const q = `SELECT * FROM detail_livraison WHERE id_detail_livraison = ?`;
+    const q = `
+            SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure FROM detail_livraison
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
+              INNER JOIN client ON commande.id_client = client.id
+              INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+              INNER JOIN marque ON produit.id_marque = marque.id_marque
+              INNER JOIN users ON detail_livraison.id_livreur  = users.id
+              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+            WHERE commande.id_commande = ?`;
    
   db.query(q,id, (error, data) => {
       if (error) res.status(500).send(error);
@@ -129,7 +143,7 @@ exports.postLivraisonDetail = (req, res) => {
   const getIdCommandeQuery = 'SELECT prix, quantite FROM detail_commande WHERE id_varianteProduit = ?';
   const qStockeTaille = `SELECT stock FROM varianteproduit WHERE id_varianteProduit = ?`;
   const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
-  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?)';
+  const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`, `id_commande`,`id_fournisseur`, `description`) VALUES(?,?,?,?,?,?,?,?)';
 
   const valuesMouv = [
     req.body.id_varianteProduit,
@@ -137,6 +151,7 @@ exports.postLivraisonDetail = (req, res) => {
     req.body.quantite,
     req.body.id_user_cr,
     req.body.id_client,
+    req.body.id_commande,
     req.body.id_fournisseur,
     req.body.description
 ]

@@ -15,11 +15,23 @@ exports.getDemandeCommandeCount = (req, res) => {
   })
 }
 
+exports.getIdVariantProduit = (req, res) => {
+  const idVariante = req.params.idCode;
+  const idTaille = req.params.idTaille;
+
+  const q = `SELECT id_varianteProduit FROM varianteproduit WHERE code_variant = '${idVariante}' AND id_taille = ${idTaille}`;
+   
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
 exports.getDemandeCommande = (req, res) => {
     const q = `SELECT detail_commande.*, varianteproduit.img, taille.taille, users.username
                 FROM detail_commande 
                 INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit
-                INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+                INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
                 INNER JOIN users ON detail_commande.user_cr = users.id 
                 WHERE detail_commande.est_supprime = 0 GROUP BY id_commande`;
      
@@ -34,7 +46,7 @@ exports.getDemandeCommandeAll = (req, res) => {
   const q = `SELECT detail_commande.*, varianteproduit.img, taille.taille, users.username
               FROM detail_commande 
               INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit
-              INNER JOIN taille ON detail_commande.id_taille = taille.id_taille
+              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
               INNER JOIN users ON detail_commande.user_cr = users.id
               WHERE detail_commande.est_supprime = 0 AND detail_commande.id_commande = ?`;
    
@@ -168,7 +180,7 @@ exports.postCommande = (req, res) => {
     const paye = req.body.paye !== undefined ? req.body.paye : 0;
     const values = [
         req.body.id_client,
-        req.body.statut,
+        req.body.statut || 2,
         req.body.id_livraison || 0,
         req.body.id_paiement || 0,
         req.body.user_cr || 0,
