@@ -11,7 +11,7 @@ exports.getDemandeCommandeCount = (req, res) => {
     db.query(q ,(error, data)=>{
       if(error) res.status(500).send(error)
   
-      return res.status(200).json(data);
+      return res.status(200).json(data); 
   })
 }
 
@@ -60,7 +60,7 @@ exports.postDemandeCommande = (req, res) => {
   const selectQuery = `
     SELECT id_commande, id_varianteProduit, id_client, prix, statut_demande, description, id_taille, quantite, user_cr
     FROM detail_commande
-    WHERE id_varianteProduit = ? AND id_taille = ?
+    WHERE id_varianteProduit = ? AND id_taille = ? AND id_commande = ?
   `;
 
   const insertQuery = `
@@ -71,9 +71,9 @@ exports.postDemandeCommande = (req, res) => {
   const updateQuery = `
   UPDATE detail_commande
   SET quantite = quantite + ?, prix = prix + ?
-  WHERE id_varianteProduit = ? AND id_taille = ?
+  WHERE id_varianteProduit = ? AND id_taille = ? AND id_commande = ?
 `;
-  const selectValues = [req.body.id_varianteProduit, req.body.id_taille];
+  const selectValues = [req.body.id_varianteProduit, req.body.id_taille, req.body.id_commande,];
   const insertValues = [
     req.body.id_commande,
     req.body.id_varianteProduit,
@@ -90,7 +90,8 @@ exports.postDemandeCommande = (req, res) => {
     req.body.quantite,
     req.body.prix,
     req.body.id_varianteProduit,
-    req.body.id_taille
+    req.body.id_taille,
+    req.body.id_commande,
   ];
 
   db.query(selectQuery, selectValues, (error, rows) => {
@@ -101,7 +102,7 @@ exports.postDemandeCommande = (req, res) => {
     }
 
     if (rows.length === 0) {
-      // Aucune ligne trouvée, effectuer une insertion
+
       db.query(insertQuery, insertValues, (error, data) => {
         if (error) {
           res.status(500).json(error);
@@ -111,7 +112,7 @@ exports.postDemandeCommande = (req, res) => {
         }
       });
     } else {
-      // Ligne trouvée, effectuer une mise à jour
+
       db.query(updateQuery, updateValues, (error, data) => {
         if (error) {
           res.status(500).json(error);
@@ -126,7 +127,7 @@ exports.postDemandeCommande = (req, res) => {
 
 exports.deleteDemandeCommande = (req, res) => {
     const {id} = req.params;
-    console.log(id)
+
     const q = "DELETE FROM detail_commande WHERE id_detail = ?"
   
     db.query(q, [id], (err, data)=>{
@@ -136,7 +137,6 @@ exports.deleteDemandeCommande = (req, res) => {
   };
 
 //Commande
-
 exports.getCommande = (req, res) => {
   const q = `SELECT *
             FROM commande
@@ -198,7 +198,7 @@ exports.postCommande = (req, res) => {
     });
   };
 
-  exports.putCommande = (req, res) => {
+exports.putCommande = (req, res) => {
     const { id } = req.params;
 
     const q = "UPDATE commande SET `id_client` = ?, `statut` = ?, `id_livraison` = ?, `id_paiement` = ?, `user_cr` = ?, `id_shop` = ?, `paye` = ?, `retour` = ? WHERE id_commande = ?";
@@ -234,11 +234,9 @@ exports.deleteCommande = (req, res) => {
     })
   }
 
-  //Status
-
-  exports.getStatus = (req, res) => {
-    const q = `SELECT *
-              FROM statut`;
+//Status
+exports.getStatus = (req, res) => {
+    const q = `SELECT * FROM statut`;
      
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);

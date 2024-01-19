@@ -25,6 +25,16 @@ exports.getVente = (req, res) => {
     });
 }
 
+exports.getVenteCount = (req, res) => {
+  const q = "SELECT COUNT(*) AS total FROM vente WHERE est_supprime = 0";
+
+  db.query(q ,(error, data)=>{
+    if(error) res.status(500).send(error)
+
+    return res.status(200).json(data);
+})
+}
+
 exports.getVenteOne = (req, res) => {
   const {id} = req.params;
   const q = `
@@ -141,14 +151,6 @@ exports.postVenteRetour = (req, res) => {
   const qUpdateMouv = `UPDATE mouvement_stock SET id_type_mouvement = ? WHERE id_varianteProduit = ?`;
   const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`, `id_detail_commande`,`prix_unitaire`) VALUES(?,?,?,?,?,?)';
 
-  const values = [
-      req.body.id_client,
-      req.body.id_livreur,
-      req.body.quantite,
-      req.body.id_commande,
-      req.body.id_detail_commande,
-      req.body.prix_unitaire
-  ]
   const valuesMouv = [
       req.body.id_varianteProduit,
       req.body.id_type_mouvement,

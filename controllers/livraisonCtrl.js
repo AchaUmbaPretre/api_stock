@@ -53,7 +53,7 @@ exports.deleteLivraison = (req, res) => {
 
 //Detail livraison
 exports.getLivraisonDetail = (req, res)=>{
-  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure FROM detail_livraison
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, client.id AS id_client, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure FROM detail_livraison
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
               INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
               INNER JOIN client ON commande.id_client = client.id
@@ -61,6 +61,7 @@ exports.getLivraisonDetail = (req, res)=>{
               INNER JOIN marque ON produit.id_marque = marque.id_marque
               INNER JOIN users ON detail_livraison.id_livreur  = users.id
               INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+              GROUP BY commande.id_commande
               `;
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
@@ -244,6 +245,7 @@ exports.postLivraisonDetail = (req, res) => {
 
 exports.deleteLivraisonDetail = (req, res) => {
     const {id} = req.params;
+
     const q = "DELETE FROM detail_livraison WHERE id_detail_livraison = ?"
   
     db.query(q, [id], (err, data)=>{
@@ -256,11 +258,13 @@ exports.deleteLivraisonDetail = (req, res) => {
 exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;
 
-  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone, client.id AS id_client FROM detail_livraison
-                INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
-                INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
-                INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande 
-                INNER JOIN client ON commande.id_client = client.id
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.avenue, client.quartier, client.commune, client.num, client.telephone, client.id AS id_client, commune.nom_commune, province.nom_province FROM detail_livraison
+              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+              INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail
+              INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande 
+              INNER JOIN client ON commande.id_client = client.id
+              INNER JOIN commune ON client.commune = commune.id_commune
+              INNER JOIN province ON client.id_province = province.id_province
             WHERE vu_livreur = 0 AND id_livreur = ? GROUP BY commande.id_commande
             `;
  
@@ -274,11 +278,13 @@ exports.getLivraisonUserOne = (req, res)=>{
   const {id} = req.params;
   const idCommande = req.query.id_commande
 
-  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.adresse, client.telephone  FROM detail_livraison 
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom, client.avenue, client.quartier, client.commune, client.num, client.telephone, client.id AS id_client, commune.nom_commune, province.nom_province FROM detail_livraison 
               INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit 
               INNER JOIN detail_commande ON detail_livraison.id_detail_commande = detail_commande.id_detail 
               INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
               INNER JOIN client ON commande.id_client = client.id
+              INNER JOIN commune ON client.commune = commune.id_commune
+              INNER JOIN province ON client.id_province = province.id_province
               WHERE vu_livreur = 0 AND id_livreur = ${id} AND commande.id_commande = ${idCommande};
             `;
  

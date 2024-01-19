@@ -13,7 +13,7 @@ router.delete("/livraisonDelete/:id", deleteLivraison);
 router.get("/livraisonDetail", getLivraisonDetail);
 router.get("/livraisonDetailOne/:id", getLivraisonDetailOne);
 router.post("/livraisonDetail", postLivraisonDetail);
-router.delete("/livraisonDelete/:id", deleteLivraisonDetail);
+router.delete("/livraisonDeleteDetail/:id", deleteLivraisonDetail);
 
 //livraison utilisateur
 router.get("/livraison-user/:id",getLivraisonUser)

@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.getLivreurCount = (req, res) => {
-    const q = "SELECT COUNT(*) AS total FROM livreur WHERE est_supprime = 0";
+    const q = "SELECT COUNT(*) AS total FROM users WHERE role = 'livreur'";
   
     db.query(q ,(error, data)=>{
       if(error) res.status(500).send(error)
