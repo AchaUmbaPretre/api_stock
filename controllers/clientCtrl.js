@@ -103,25 +103,3 @@ exports.putClient = (req, res) => {
       return res.json(data);
     });
 }
-
-//province
-
-exports.getProvince = (req, res) => {
-    const q = "SELECT * FROM province";
-     
-    db.query(q, (error, data) => {
-        if (error) res.status(500).send(error);
-        return res.status(200).json(data);
-    });
-}
-//Commune
-exports.getCommune = (req, res) => {
-  const {id} = req.params;
-
-  const q = `SELECT * FROM commune WHERE id_province = ?`;
-   
-  db.query(q, [id], (error, data) => {
-      if (error) res.status(500).send(error);
-      return res.status(200).json(data);
-  });
-}
