@@ -42,19 +42,22 @@ exports.getDemandeCommande = (req, res) => {
 }
 
 exports.getDemandeCommandeAll = (req, res) => {
-  const {id} = req.params
+  const { id } = req.params;
+
   const q = `SELECT detail_commande.*, varianteproduit.img, taille.taille, users.username
               FROM detail_commande 
               INNER JOIN varianteproduit ON detail_commande.id_varianteProduit = varianteproduit.id_varianteProduit
               INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
               INNER JOIN users ON detail_commande.user_cr = users.id
               WHERE detail_commande.est_supprime = 0 AND detail_commande.id_commande = ?`;
-   
-  db.query(q,id, (error, data) => {
-      if (error) res.status(500).send(error);
-      return res.status(200).json(data);
+
+  db.query(q, [id], (error, data) => {
+    if (error) {
+      return res.status(500).send(error);
+    }
+    return res.status(200).json(data);
   });
-}
+};
 
 exports.postDemandeCommande = (req, res) => {
   const selectQuery = `
