@@ -254,6 +254,33 @@ exports.deleteLivraisonDetail = (req, res) => {
     })
 }
 
+//Livraison prix
+exports.getLivraisonDetailPrix = (req, res)=>{
+  const {id} = req.params;
+  const q = `
+          SELECT prix FROM detail_livraison
+          WHERE id_detail_livraison = ?`;
+ 
+db.query(q,[id], (error, data) => {
+    if (error) res.status(500).send(error);
+    return res.status(200).json(data);
+});
+}
+
+exports.putLivraisonDetailPrix = (req, res) => {
+  const {id} = req.params;
+  const {prix} = req.body;
+  const q = "UPDATE detail_livraison SET `prix` = ? WHERE id_detail_livraison = ?";
+
+  db.query(q, [prix,id], (err, data) => {
+      if (err) return res.send(err);
+      console.log(err)
+      return res.json(data);
+    });
+  }
+
+
+
 //livraison utilisateur
 exports.getLivraisonUser = (req, res)=>{
   const {id} = req.params;

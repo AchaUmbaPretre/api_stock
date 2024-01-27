@@ -19,7 +19,7 @@ exports.getIdVariantProduit = (req, res) => {
   const idVariante = req.params.idCode;
   const idTaille = req.params.idTaille;
 
-  const q = `SELECT id_varianteProduit FROM varianteproduit WHERE code_variant = '${idVariante}' AND id_taille = ${idTaille}`;
+  const q = `SELECT id_varianteProduit,stock FROM varianteproduit WHERE code_variant = '${idVariante}' AND id_taille = ${idTaille}`;
    
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);

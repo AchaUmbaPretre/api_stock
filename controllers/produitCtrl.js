@@ -1,5 +1,4 @@
 const { db } = require("./../config/db.js");
-const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -67,7 +66,7 @@ exports.getProduitTotalAchats = (req, res) => {
 exports.getProduitRecement = (req, res) => {
     const q = `
         SELECT
-        varianteproduit.img, taille.taille, couleur.description, marque.nom, taille_pays.prix,
+        varianteproduit.img, taille.taille, couleur.description, marque.nom, taille_pays.prix, varianteproduit.id_varianteProduit,
         CASE
           WHEN varianteproduit.stock > 0 THEN 'Actif'
           ELSE 'Inactif'
@@ -116,6 +115,7 @@ exports.postProduit = (req, res) => {
       }
     });
   };
+
 /* exports.deleteProduit = (req, res) => {
     const {id} = req.params;
     const q = "UPDATE produit SET est_supprime = 1 WHERE id_produit = ?";
@@ -184,6 +184,16 @@ exports.putProduit = (req, res) => {
     });
   };
 
+  //Code variant Produit
+exports.getCodeVariantProduit = (req, res) => {
+
+  const q = `SELECT code_variante FROM produit GROUP BY code_variante;`
+   
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
 
 //Code variant
 exports.getCodeVariant = (req, res) => {
@@ -305,6 +315,7 @@ exports.getVariantProduitFiltrage = (req, res) => {
     return res.status(200).json(data);
   });
 };
+
 exports.getVariantProduitFiltrageMarque = (req, res) => {
     const marqueFilter = req.params.id;
 
@@ -357,6 +368,33 @@ exports.getVariantProduitFiltrageCible = (req, res) => {
       return res.status(200).json(data);
     });
   };
+
+exports.getVariantProduitFiltrageTaille = (req, res) => {
+    const tailleFilter = req.params.id;
+
+    const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
+                categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
+                couleur.description, taille_pays.prix, famille.nom AS nom_famille
+                FROM varianteproduit
+                INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit 
+                INNER JOIN marque ON produit.id_marque = marque.id_marque
+                INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+                INNER JOIN matiere ON produit.id_matiere = matiere.id_matiere
+                INNER JOIN cible ON produit.id_cible = cible.id_cible
+                INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+                INNER JOIN pays ON taille.id_pays = pays.id_pays
+                INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+                INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
+                INNER JOIN famille ON categorie.id_famille = famille.id_famille 
+                  WHERE taille.id_taille = '${tailleFilter}'
+                GROUP BY varianteproduit.img
+              `;
+  
+    db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+    });
+  };
   
 exports.postVariantProduit = (req, res) => {
     const qVarianteProduit =
@@ -381,6 +419,8 @@ exports.postVariantProduit = (req, res) => {
       req.body.code_variant,
     ];
 
+/*     const stockIncremente = 'SELECT id_taille, code_variante FROM varianteproduit WHERE id_taille = ? AND code_variante = ?'
+ */
   
     db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
       if (errorVariante) {
@@ -397,6 +437,16 @@ exports.postVariantProduit = (req, res) => {
       }
     });
   };
+
+exports.deleteVariantProduit = (req, res) => {
+  const {id} = req.params;
+  const q = "DELETE FROM varianteproduit WHERE id_varianteProduit = ?"
+
+  db.query(q, [id], (err, data)=>{
+      if (err) return res.send(err);
+    return res.json(data);
+  })
+}
   
   //Couleur
 exports.getCouleur = (req, res) => {
@@ -408,6 +458,34 @@ exports.getCouleur = (req, res) => {
       return res.status(200).json(data);
   });
 }
+
+exports.postCouleur = (req, res) => {
+  const q = 'INSERT INTO couleur(`description`) VALUES (?)';
+
+  const values = [
+    req.body.description
+  ]
+
+  db.query(q, values, (error, data) => {
+    if (error) {
+      res.status(500).json(error);
+      console.log(error);
+    } else {
+      res.json('Processus réussi');
+    }
+  });
+};
+
+exports.deleteCouleur = (req, res) => {
+  const {id} = req.params;
+  const q = "DELETE FROM couleur WHERE id_couleur = ?"
+
+  db.query(q, [id], (err, data)=>{
+      if (err) return res.send(err);
+    return res.json(data);
+  })
+};
+
 
 //Categorie
 exports.getCategorie = (req, res) => {
@@ -702,7 +780,18 @@ exports.getPays = (req, res) => {
   });
 }
 
-//taille
+//Taille get
+exports.getTailleAll = (req, res) => {
+
+  const q = "SELECT * FROM taille GROUP BY taille";
+  db.query(q, (error, data) => {
+      if (error) res.status(500).send(error);
+      return res.status(200).json(data);
+  });
+}
+
+
+//taille id 
 exports.getTaille = (req, res) => {
   const {id} = req.params;
 

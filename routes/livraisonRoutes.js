@@ -1,5 +1,5 @@
 const express = require("express");
-const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail, getLivraisonUser, getLivraisonUserDetail, putLivraisonVuLivreur, getLivraisonUserOne } = require("../controllers/livraisonCtrl");
+const { getLivraison, getLivraisonOne, postLivraison, deleteLivraison, getLivraisonDetail, getLivraisonDetailOne, postLivraisonDetail, deleteLivraisonDetail, getLivraisonUser, getLivraisonUserDetail, putLivraisonVuLivreur, getLivraisonUserOne, getLivraisonDetailPrix, putLivraisonDetailPrix } = require("../controllers/livraisonCtrl");
 const router = express.Router();
 
 
@@ -15,12 +15,16 @@ router.get("/livraisonDetailOne/:id", getLivraisonDetailOne);
 router.post("/livraisonDetail", postLivraisonDetail);
 router.delete("/livraisonDeleteDetail/:id", deleteLivraisonDetail);
 
-//livraison utilisateur
-router.get("/livraison-user/:id",getLivraisonUser)
-router.get("/livraison-userOne/:id",getLivraisonUserOne)
-router.get("/livraison-user-detail/:id",getLivraisonUserDetail)
+//Livraison Prix
+router.get("/livraisonPrix/:id",getLivraisonDetailPrix);
+router.put("/livraisonPrix/:id",putLivraisonDetailPrix);
 
-router.put("/vuLivreur/:id",putLivraisonVuLivreur)
+//livraison utilisateur
+router.get("/livraison-user/:id",getLivraisonUser);
+router.get("/livraison-userOne/:id",getLivraisonUserOne);
+router.get("/livraison-user-detail/:id",getLivraisonUserDetail);
+
+router.put("/vuLivreur/:id",putLivraisonVuLivreur);
 
 
 module.exports = router;

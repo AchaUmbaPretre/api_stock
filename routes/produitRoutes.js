@@ -1,5 +1,5 @@
 const express = require("express");
-const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement, getMouvement, postMouvement, deleteMouvement, putMouvement, getVariantProduitAll, getMouvementVariante, getCatMouvement, getCodeVariant, getMouvementOne, getProduitCount, getProduitRecement } = require("../controllers/produitCtrl.js");
+const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement, getMouvement, postMouvement, deleteMouvement, putMouvement, getVariantProduitAll, getMouvementVariante, getCatMouvement, getCodeVariant, getMouvementOne, getProduitCount, getProduitRecement, getCodeVariantProduit, getTailleAll, getVariantProduitFiltrageTaille, deleteVariantProduit, postCouleur, deleteCouleur } = require("../controllers/produitCtrl.js");
 const router = express.Router();
 
 router.get('/', getProduit);
@@ -9,6 +9,7 @@ router.get('/produit/:id', getProduitOne);
 router.post('/produit', postProduit);
 router.put('/produitDelete/:id', deleteProduit)
 
+router.get('/CodevarianteProduit', getCodeVariantProduit);
 router.get('/Codevariante', getCodeVariant);
 
 router.get('/varianteProduit', getVariantProduit);
@@ -18,9 +19,13 @@ router.get('/mouvementVariante/:id', getMouvementVariante);
 router.get('/varianteFiltre/:id', getVariantProduitFiltrage);
 router.get('/varianteFiltreMarque/:id', getVariantProduitFiltrageMarque);
 router.get('/varianteFiltreCible/:id', getVariantProduitFiltrageCible);
+router.get('/varianteFiltreTaille/:id', getVariantProduitFiltrageTaille);
 router.post('/varianteProduit', postVariantProduit);
+router.delete('/varianteProduit/:id', deleteVariantProduit);
 
 router.get('/couleur', getCouleur);
+router.post('/couleur', postCouleur);
+router.delete('/couleur/:id', deleteCouleur);
 
 router.get('/categorie', getCategorie);
 router.get('/categorieOne/:id', getCategorieOne);
@@ -50,6 +55,7 @@ router.get('/famille', getFamille)
 
 router.get('/cible', getCible)
 router.get('/pays', getPays)
+router.get('/tailleAll', getTailleAll)
 
 router.get('/tailleOne/:id', getTaille);
 

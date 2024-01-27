@@ -148,8 +148,6 @@ exports.postVenteRetour = (req, res) => {
   const qUpdateStock = `UPDATE varianteproduit SET stock = ? WHERE id_varianteProduit = ?`;
   const qLivraison = "UPDATE detail_livraison SET vu_livreur = 1 WHERE id_varianteProduit = ?";
   const qInsertMouvement = 'INSERT INTO mouvement_stock(`id_varianteProduit`, `id_type_mouvement`, `quantite`, `id_user_cr`, `id_client`,`id_commande`, `id_fournisseur`, `description`) VALUES(?)';
-  const qUpdateMouv = `UPDATE mouvement_stock SET id_type_mouvement = ? WHERE id_varianteProduit = ?`;
-  const q = 'INSERT INTO vente(`id_client`, `id_livreur`, `quantite`, `id_commande`, `id_detail_commande`,`prix_unitaire`) VALUES(?,?,?,?,?,?)';
 
   const valuesMouv = [
       req.body.id_varianteProduit,
