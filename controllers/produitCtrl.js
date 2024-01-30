@@ -370,7 +370,7 @@ exports.getVariantProduitFiltrageCible = (req, res) => {
   };
 
 exports.getVariantProduitFiltrageTaille = (req, res) => {
-    const tailleFilter = req.params.id;
+    const tailleFilter = req.params.id.split(',');;
 
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
                 categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
@@ -386,7 +386,7 @@ exports.getVariantProduitFiltrageTaille = (req, res) => {
                 INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
                 INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
                 INNER JOIN famille ON categorie.id_famille = famille.id_famille 
-                  WHERE taille.id_taille = '${tailleFilter}'
+                  WHERE taille.id_taille IN (${tailleFilter.map(taille =>`'${taille}'`).join(',')})
                 GROUP BY varianteproduit.img
               `;
   
