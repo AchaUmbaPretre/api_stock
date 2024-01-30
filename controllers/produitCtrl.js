@@ -344,7 +344,7 @@ exports.getVariantProduitFiltrageMarque = (req, res) => {
   };
 
 exports.getVariantProduitFiltrageCible = (req, res) => {
-    const cibleFilter = req.params.id;
+    const cibleFilter = req.params.id.split(',');
 
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
               categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
@@ -360,7 +360,7 @@ exports.getVariantProduitFiltrageCible = (req, res) => {
               INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
               INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
               INNER JOIN famille ON categorie.id_famille = famille.id_famille 
-                WHERE cible.id_cible = '${cibleFilter}'
+                WHERE cible.id_cible IN (${cibleFilter.map(filter =>`'${filter}'`).join(',')}) 
               GROUP BY varianteproduit.img`;
   
     db.query(q, (error, data) => {
