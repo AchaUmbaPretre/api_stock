@@ -157,10 +157,12 @@ exports.getCommandeOne = (req, res) => {
   const {id} = req.params;
 
   const q = `SELECT *
-            FROM commande
-            INNER JOIN client ON commande.id_client = client.id
-            INNER JOIN statut ON commande.statut = statut.id_statut
-            WHERE commande.est_supprime = 0 AND commande.id_commande = ?`;
+  FROM commande
+  INNER JOIN client ON commande.id_client = client.id
+  INNER JOIN statut ON commande.statut = statut.id_statut
+  INNER JOIN province ON client.id_province = province.id_province
+  INNER JOIN commune ON client.commune = commune.id_commune
+  WHERE commande.est_supprime = 0 AND commande.id_commande = ?`;
    
   db.query(q,id, (error, data) => {
       if (error) res.status(500).send(error);

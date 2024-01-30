@@ -288,7 +288,7 @@ ORDER BY taille.taille DESC;
 }
 
 exports.getVariantProduitFiltrage = (req, res) => {
-  const familleFilter = req.params.id;
+  const familleFilter = req.params.id.split(',');
 
   const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
   categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
@@ -304,7 +304,7 @@ exports.getVariantProduitFiltrage = (req, res) => {
   INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
   INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
   INNER JOIN famille ON categorie.id_famille = famille.id_famille 
-  WHERE famille.id_famille = '${familleFilter}'
+  WHERE famille.id_famille IN (${familleFilter.map(famille => `'${famille}'`).join(',')})
   GROUP BY varianteproduit.img
   `;
   
@@ -317,7 +317,7 @@ exports.getVariantProduitFiltrage = (req, res) => {
 };
 
 exports.getVariantProduitFiltrageMarque = (req, res) => {
-    const marqueFilter = req.params.id;
+    const marqueFilter = req.params.id.split(',');
 
     const q = `SELECT varianteproduit.*, produit.nom_produit, produit.date_entrant, marque.nom AS nom_marque,
             categorie.nom_categorie, matiere.nom_matiere, cible.nom_cible, taille.taille AS pointure, pays.code_pays,
@@ -333,7 +333,7 @@ exports.getVariantProduitFiltrageMarque = (req, res) => {
             INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
             INNER JOIN taille_pays ON varianteproduit.code_variant = taille_pays.code_variant
             INNER JOIN famille ON categorie.id_famille = famille.id_famille 
-              WHERE marque.id_marque = '${marqueFilter}'
+              WHERE marque.id_marque IN (${marqueFilter.map(marque =>`'${marque}'`).join(',')})
             GROUP BY varianteproduit.img
             `;
   
