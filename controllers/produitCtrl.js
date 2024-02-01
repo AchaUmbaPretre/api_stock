@@ -579,6 +579,7 @@ exports.postEmplacement = (req, res) => {
       req.body.nom,
       req.body.capacite
   ]
+  
   db.query(q, values, (error, data) => {
     if (error) {
       res.status(500).json(error);
