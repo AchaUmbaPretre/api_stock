@@ -38,7 +38,7 @@ const port = process.env.PORT || 8080;
 
 // Gestionnaire d'erreurs global pour les erreurs non capturées
 process.on('uncaughtException', (err) => {
-  console.log('Erreur non capturée:', err);
+  console.error('Erreur non capturée:', err);
 
   process.exit(1);
 });
