@@ -15,12 +15,11 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-
 dotenv.config();
 
 app.use(cors());
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
 
 app.setMaxListeners(0);
@@ -37,9 +36,22 @@ app.use('/api/vente', venteRoutes);
 
 const port = process.env.PORT || 8080;
 
+// Gestionnaire d'erreurs global pour les erreurs non capturées
+process.on('uncaughtException', (err) => {
+  console.log('Erreur non capturée:', err);
+
+  process.exit(1);
+});
+
+// Gestionnaire d'erreurs global pour les rejets de promesse non gérés
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Rejet de promesse non géré:', reason);
+
+  process.exit(1);
+});
+
 app.listen(port, () => {
-    console.log(
-        `le serveur est connecté au port ${process.env.PORT}`
-          .bgCyan.white
-      );
-  });
+  console.log(
+    `Le serveur est connecté au port ${port}`.bgCyan.white
+  );
+});
