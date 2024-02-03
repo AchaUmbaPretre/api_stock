@@ -6,14 +6,17 @@ dotenv.config();
 
 //Client
 exports.getClientCount = (req, res) => {
-    const q = "SELECT COUNT(*) AS total FROM client WHERE est_supprime = 0";
-  
-    db.query(q ,(error, data)=>{
-      if(error) res.status(500).send(error)
-  
-      return res.status(200).json(data);
-  })
-}
+  const q = "SELECT COUNT(*) AS total FROM client WHERE est_supprime = 0";
+
+  db.query(q, (error, data) => {
+    if (error) {
+      return res.status(500).json(error);
+    }
+    return res.status(200).json(data[0].total);
+  });
+};
+
+
 exports.getClient = (req, res) => {
     const q = `
     SELECT client.*, province.nom_province, commune.nom_commune FROM client 
