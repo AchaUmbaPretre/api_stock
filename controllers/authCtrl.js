@@ -19,7 +19,7 @@ exports.registerController = async (req, res) =>{
         
       } else {
         if (results.length > 0) {
-          res.status(409).json("L'utilisateur existe déjà.");
+          res.status(409).json({ error: "L'utilisateur existe déjà." });
         } else {
 
           const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ exports.registerController = async (req, res) =>{
             if (err) {
               res.status(500).json(err);
             } else {
-              res.status(201).json("Utilisateur enregistré avec succès");
+              res.status(201).json({ message: "Utilisateur enregistré avec succès" });
             }
           });
         }
