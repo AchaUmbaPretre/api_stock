@@ -243,17 +243,19 @@ exports.getCodeVariant = (req, res) => {
 
  //Variant produit
 exports.getVariantProduit = (req, res) => {
-
-    const q = `SELECT varianteproduit.*
-                FROM varianteproduit
+  const q = `SELECT img, COUNT(*) as count
+              FROM varianteproduit
               GROUP BY img;
-    `;
-     
-    db.query(q, (error, data) => {
-        if (error) res.status(500).send(error);
-        return res.status(200).json(data);
-    });
-  }
+  `;
+   
+  db.query(q, (error, data) => {
+    if (error) {
+      console.error('Erreur lors de la récupération des variantes de produits :', error);
+      return res.status(500).send('Une erreur est survenue lors de la récupération des variantes de produits.');
+    }
+    return res.status(200).json(data);
+  });
+}
 
 exports.getVariantProduitAll = (req, res) => {
 
@@ -968,17 +970,17 @@ db.query(q, [nom_type_mouvement,type_mouvement, id], (err, data) => {
 
 //mouvement
 exports.getMouvement = (req, res) => {
-  const q = `SELECT mouvement_stock.*, varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement, marque.nom AS nom_marque, taille.taille,client.nom AS nom_client, client.id AS id_client1 FROM mouvement_stock 
-              INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
-              INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
-              INNER JOIN detail_commande ON mouvement_stock.id_varianteProduit = detail_commande.id_varianteProduit 
-              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-              INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-              INNER JOIN marque ON produit.id_marque = marque.id_marque
-              INNER JOIN commande ON mouvement_stock.id_commande = commande.id_commande
-              INNER JOIN client ON commande.id_client = client.id
-                WHERE detail_commande.est_supprime = 0 
-                GROUP BY commande.id_commande
+  const q = `SELECT mouvement_stock.*, varianteproduit.stock, varianteproduit.img, type_mouvement.type_mouvement, marque.nom AS nom_marque, taille.taille,client.nom AS nom_client, client.id AS id_client1,client.telephone, SUM(mouvement_stock.quantite) AS total_varianteproduit FROM mouvement_stock 
+  INNER JOIN varianteproduit ON mouvement_stock.id_varianteProduit = varianteproduit.id_varianteProduit 
+  INNER JOIN type_mouvement ON mouvement_stock.id_type_mouvement = type_mouvement.id_type_mouvement 
+  INNER JOIN detail_commande ON mouvement_stock.id_varianteProduit = detail_commande.id_varianteProduit 
+  INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+  INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+  INNER JOIN marque ON produit.id_marque = marque.id_marque
+  INNER JOIN commande ON mouvement_stock.id_commande = commande.id_commande
+  INNER JOIN client ON commande.id_client = client.id
+    WHERE detail_commande.est_supprime = 0 
+    GROUP BY commande.id_commande
             `;
 
   db.query(q, (error, data) => {

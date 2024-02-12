@@ -53,15 +53,15 @@ exports.deleteLivraison = (req, res) => {
 
 //Detail livraison
 exports.getLivraisonDetail = (req, res)=>{
-  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, client.id AS id_client, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure FROM detail_livraison
-              INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
-              INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
-              INNER JOIN client ON commande.id_client = client.id
-              INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-              INNER JOIN marque ON produit.id_marque = marque.id_marque
-              INNER JOIN users ON detail_livraison.id_livreur  = users.id
-              INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-              GROUP BY commande.id_commande
+  const q = `SELECT detail_livraison.*,varianteproduit.img, client.nom AS nom_client, client.id AS id_client, client.telephone, marque.nom AS nom_marque, users.username AS nom_livreur, taille.taille AS pointure, SUM(detail_livraison.qte_livre) AS total_produit FROM detail_livraison
+  INNER JOIN varianteproduit ON detail_livraison.id_varianteProduit = varianteproduit.id_varianteProduit
+  INNER JOIN commande ON detail_livraison.id_commande = commande.id_commande
+  INNER JOIN client ON commande.id_client = client.id
+  INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+  INNER JOIN marque ON produit.id_marque = marque.id_marque
+  INNER JOIN users ON detail_livraison.id_livreur  = users.id
+  INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+  GROUP BY commande.id_commande
               `;
   db.query(q, (error, data) => {
       if (error) res.status(500).send(error);
