@@ -63,34 +63,6 @@ exports.getProduitTotalAchats = (req, res) => {
     });
   };
 
-/* exports.getProduitRecement = (req, res) => {
-    const q = `
-        SELECT
-        varianteproduit.img, taille.taille, couleur.description, marque.nom, taille_pays.prix, varianteproduit.id_varianteProduit,
-        CASE
-          WHEN varianteproduit.stock > 0 THEN 'Actif'
-          ELSE 'Inactif'
-        END AS statut
-      FROM
-        varianteproduit
-        INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
-        INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
-        INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-        INNER JOIN marque ON produit.id_marque = marque.id_marque
-        INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
-      WHERE
-        varianteproduit.est_supprime = 0
-        GROUP BY varianteproduit.code_variant
-      ORDER BY varianteproduit.created_at DESC
-      LIMIT 10 
-    `;
-  
-    db.query(q, (error, data) => {
-      if (error) res.status(500).send(error);
-      return res.status(200).json(data);
-    });
-  }; */
-
 exports.getProduitRecement = (req, res) => {
     try {
       const q = `
@@ -241,11 +213,11 @@ exports.getCodeVariant = (req, res) => {
   });
 }
 
- //Variant produit
+//Variant produit
 exports.getVariantProduit = (req, res) => {
-  const q = `SELECT img, COUNT(*) as count
-              FROM varianteproduit
-              GROUP BY img;
+  const q = `SELECT varianteproduit.*, img, COUNT(*) as count
+  FROM varianteproduit
+  GROUP BY img;
   `;
    
   db.query(q, (error, data) => {
@@ -266,6 +238,26 @@ exports.getVariantProduitAll = (req, res) => {
     db.query(q, (error, data) => {
         if (error) res.status(500).send(error);
         return res.status(200).json(data);
+    });
+  }
+
+exports.getListeVariantProduit = (req, res) => {
+    const q = `SELECT varianteproduit.*, COUNT(*) as count, categorie.nom_categorie,produit.nom_produit, marque.nom AS nom_marque, taille_pays.prix, couleur.description
+    FROM varianteproduit
+    INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+    INNER JOIN categorie ON produit.id_categorie = categorie.id_categorie
+    INNER JOIN marque ON produit.id_marque = marque.id_marque
+    INNER JOIN taille_pays ON varianteproduit.id_taille = taille_pays.id_taille
+    INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+    GROUP BY img
+    `;
+     
+    db.query(q, (error, data) => {
+      if (error) {
+        console.error('Erreur lors de la récupération des variantes de produits :', error);
+        return res.status(500).send('Une erreur est survenue lors de la récupération des variantes de produits.');
+      }
+      return res.status(200).json(data);
     });
   }
 

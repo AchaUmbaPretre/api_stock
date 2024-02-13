@@ -1,5 +1,5 @@
 const express = require("express");
-const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement, getMouvement, postMouvement, deleteMouvement, putMouvement, getVariantProduitAll, getMouvementVariante, getCatMouvement, getCodeVariant, getMouvementOne, getProduitCount, getProduitRecement, getCodeVariantProduit, getTailleAll, getVariantProduitFiltrageTaille, deleteVariantProduit, postCouleur, deleteCouleur } = require("../controllers/produitCtrl.js");
+const { getProduit, postProduit, getCouleur, getCategorie, getCategorieOne, postCategorie, deleteCategorie, putCategorie, getEmplacement, getEmplacementOne, postEmplacement, deleteEmplacement, putEmplacement, getMatiere, getMatiereOne, postMatiere, deleteMatiere, putMatiere, getMarque, getMarqueOne, postMarque, deleteMarque, putMarque, getFamille, getCible, getProduitOne, getPays, postVariantProduit, getVariantProduit, getVariantProduitFiltrage, getVariantProduitOne, getVariantProduitFiltrageMarque, getVariantProduitFiltrageCible, deleteProduit, getTaille, getTypeMouvement, postTypeMouvement, deleteType_mouvement, putType_mouvement, getMouvement, postMouvement, deleteMouvement, putMouvement, getVariantProduitAll, getMouvementVariante, getCatMouvement, getCodeVariant, getMouvementOne, getProduitCount, getProduitRecement, getCodeVariantProduit, getTailleAll, getVariantProduitFiltrageTaille, deleteVariantProduit, postCouleur, deleteCouleur, getListeVariantProduit } = require("../controllers/produitCtrl.js");
 const router = express.Router();
 
 router.get('/', getProduit);
@@ -14,6 +14,7 @@ router.get('/Codevariante', getCodeVariant);
 
 router.get('/varianteProduit', getVariantProduit);
 router.get('/varianteProduitAll', getVariantProduitAll);
+router.get('/listeVarianteProduit', getListeVariantProduit);
 router.get('/varianteDetail/:id', getVariantProduitOne);
 router.get('/mouvementVariante/:id', getMouvementVariante);
 router.get('/varianteFiltre/:id', getVariantProduitFiltrage);
