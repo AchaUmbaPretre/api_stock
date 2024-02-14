@@ -246,31 +246,35 @@ exports.putVente = (req, res) => {
 
 
 //rapport de vente
-exports.getRapportVente = (req,res)=> {
-  const q = `
-  SELECT
-  m.id_marque,
-  SUM(v.quantite) AS quantite_vendue,
-  SUM(v.prix_unitaire * v.quantite) AS montant_vendu,
-  vp.stock AS quantite_en_stock,
-  vp.img,
-  taille.taille,
-  m.nom AS nom_marque,
-  categorie.nom_categorie
-FROM vente v
-INNER JOIN varianteproduit vp ON v.id_detail_commande = vp.id_varianteProduit
-INNER JOIN produit p ON vp.id_produit = p.id_produit
-INNER JOIN marque m ON p.id_marque = m.id_marque
-INNER JOIN taille ON vp.id_taille = taille.id_taille
-INNER JOIN categorie ON p.id_categorie = categorie.id_categorie
-WHERE v.est_supprime = 0
-GROUP BY taille.taille
-    `
+exports.getRapportVente = (req, res) => {
+  const { start_date, end_date } = req.query;
 
-    db.query(q,(error, data) => {
-      if (error) return res.status(500).send(error);
-  
-      return res.status(200).json(data);
-    });
-}
+  const q = `
+    SELECT
+      m.id_marque,
+      SUM(v.quantite) AS quantite_vendue,
+      SUM(v.prix_unitaire * v.quantite) AS montant_vendu,
+      vp.stock AS quantite_en_stock,
+      vp.img,
+      taille.taille,
+      m.nom AS nom_marque,
+      categorie.nom_categorie
+    FROM vente v
+    INNER JOIN varianteproduit vp ON v.id_detail_commande = vp.id_varianteProduit
+    INNER JOIN produit p ON vp.id_produit = p.id_produit
+    INNER JOIN marque m ON p.id_marque = m.id_marque
+    INNER JOIN taille ON vp.id_taille = taille.id_taille
+    INNER JOIN categorie ON p.id_categorie = categorie.id_categorie
+    WHERE v.est_supprime = 0
+      ${start_date ? `AND v.date_vente >= '${start_date}'` : ''}
+      ${end_date ? `AND v.date_vente <= '${end_date}'` : ''}
+    GROUP BY taille.taille
+  `;
+
+  db.query(q, (error, data) => {
+    if (error) return res.status(500).send(error);
+
+    return res.status(200).json(data);
+  });
+};
 

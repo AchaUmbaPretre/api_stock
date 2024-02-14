@@ -98,6 +98,41 @@ exports.getProduitRecement = (req, res) => {
     }
   };
 
+  exports.getProduitRecement = (req, res) => {
+    try {
+      const q = `
+        SELECT
+          varianteproduit.img, taille.taille, couleur.description, marque.nom, taille_pays.prix, varianteproduit.id_varianteProduit,
+          CASE
+            WHEN varianteproduit.stock > 0 THEN 'Actif'
+            ELSE 'Inactif'
+          END AS statut
+        FROM
+          varianteproduit
+          INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+          INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+          INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+          INNER JOIN marque ON produit.id_marque = marque.id_marque
+          INNER JOIN taille_pays ON taille.id_taille = taille_pays.id_taille
+        WHERE
+          varianteproduit.est_supprime = 0
+        GROUP BY varianteproduit.code_variant
+        ORDER BY varianteproduit.created_at DESC
+        LIMIT 10 
+      `;
+  
+      db.query(q, (error, data) => {
+        if (error) {
+          throw new Error('Erreur lors de la récupération des produits récemment ajoutés.');
+        } else {
+          res.status(200).json(data);
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  };
+
 exports.postProduit = (req, res) => {
     const qProduit = 'INSERT INTO produit(`nom_produit`,`id_categorie`,`id_marque`,`id_matiere`,`actif`,`date_entrant`,`date_MisAjour`,`id_cible`, `prix`, `code_variante`, `etatProduit`) VALUES(?)';
     const valuesProduit = [
