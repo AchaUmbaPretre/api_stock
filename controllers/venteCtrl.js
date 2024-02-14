@@ -333,15 +333,18 @@ exports.getRapportVenteAll = (req, res) => {
   vp.img,
   taille.taille,
   m.nom AS nom_marque,
-  categorie.nom_categorie
+  categorie.nom_categorie,
+  couleur.description
 FROM vente v
 INNER JOIN detail_commande ON v.id_detail_commande = detail_commande.id_detail
 INNER JOIN varianteproduit vp ON detail_commande.id_varianteProduit = vp.id_varianteProduit
 INNER JOIN produit p ON vp.id_produit = p.id_produit
+INNER JOIN couleur ON vp.id_couleur = couleur.id_couleur
 INNER JOIN marque m ON p.id_marque = m.id_marque
 INNER JOIN taille ON vp.id_taille = taille.id_taille
 INNER JOIN categorie ON p.id_categorie = categorie.id_categorie
-WHERE v.est_supprime = 0 AND m.id_marque = ${id_marque}  GROUP BY taille.id_taille;
+WHERE v.est_supprime = 0 AND m.id_marque = ${id_marque} 
+  GROUP BY taille.id_taille;
   `;
 
   try {
