@@ -250,19 +250,23 @@ exports.getCodeVariant = (req, res) => {
 
 //Variant produit
 exports.getVariantProduit = (req, res) => {
-  const q = `SELECT varianteproduit.*, img, COUNT(*) as count
-  FROM varianteproduit
-  GROUP BY img;
-  `;
-   
-  db.query(q, (error, data) => {
-    if (error) {
-      console.error('Erreur lors de la récupération des variantes de produits :', error);
-      return res.status(500).send('Une erreur est survenue lors de la récupération des variantes de produits.');
-    }
-    return res.status(200).json(data);
-  });
-}
+  try {
+    const q = `SELECT varianteproduit.*, img, COUNT(*) as count
+      FROM varianteproduit
+      GROUP BY img;
+      `;
+     
+    db.query(q, (error, data) => {
+      if (error) {
+        throw new Error('Erreur lors de la récupération des variantes de produit.'); // Lancer une erreur pour être capturée par le bloc catch
+      } else {
+        res.status(200).json(data);
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message }); // Capturer et renvoyer l'erreur au client avec un message d'erreur personnalisé
+  }
+};
 
 exports.getVariantProduitAll = (req, res) => {
 
@@ -459,48 +463,6 @@ exports.getVariantProduitFiltrageTaille = (req, res) => {
       return res.status(200).json(data);
     });
   };
-  
-// exports.postVariantProduit = (req, res) => {
-//     const qVarianteProduit =
-//       'INSERT INTO varianteproduit(`id_produit`, `id_taille`, `id_couleur`, `stock`, `code_variant`,`img`) VALUES (?, ?, ?, ?, ?, ?)';
-//     const valuesVariante = [
-//       req.body.id_produit,
-//       req.body.id_taille,
-//       req.body.id_couleur,
-//       req.body.stock,
-//       req.body.code_variant,
-//       req.body.img
-//     ];
-  
-//     const qTaillePays =
-//       'INSERT INTO taille_pays(`id_taille`, `id_pays`, `id_couleur`, `stock`, `prix`, `code_variant`) VALUES (?, ?, ?, ?, ?, ?)';
-//     const valuesTaillePays = [
-//       req.body.id_taille,
-//       req.body.id_pays,
-//       req.body.id_couleur,
-//       req.body.stock,
-//       req.body.prix,
-//       req.body.code_variant,
-//     ];
-
-// /*     const stockIncremente = 'SELECT id_taille, code_variante FROM varianteproduit WHERE id_taille = ? AND code_variante = ?'
-//  */
-  
-//     db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
-//       if (errorVariante) {
-//         res.status(500).json(errorVariante);
-//       } else {
-  
-//         db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
-//           if (errorTaillePays) {
-//             res.status(500).json(errorTaillePays);
-//           } else {
-//             res.json({ message: 'Processus réussi' });
-//           }
-//         });
-//       }
-//     });
-//   };
 
 exports.postVariantProduit = (req, res) => {
   const qVarianteProduit =
@@ -529,45 +491,49 @@ exports.postVariantProduit = (req, res) => {
   const codeVariant = req.body.code_variant;
   const idTaille = req.body.id_taille;
 
-  db.query(checkVariantQuery, [codeVariant, idTaille], (error, results) => {
-    if (error) {
-      res.status(500).json(error);
-    } else {
-      if (results.length > 0) {
-        // La variante existe déjà, vous pouvez modifier la quantité du stock existant
-        const existingVariant = results[0];
-        const newStock = parseInt(existingVariant.stock) + parseInt(req.body.stock);
-        // Mettre à jour la quantité du stock pour la variante existante
-        const updateStockQuery = 'UPDATE varianteproduit SET stock = ? WHERE id_produit = ? AND id_taille = ?';
-        const updateStockValues = [newStock, existingVariant.id_produit, idTaille];
-
-        db.query(updateStockQuery, updateStockValues, (updateError, updateResults) => {
-          if (updateError) {
-            res.status(500).json(updateError);
-          } else {
-            // Répondre avec succès
-            res.json({ message: 'Processus réussi' });
-          }
-        });
+  try {
+    db.query(checkVariantQuery, [codeVariant, idTaille], (error, results) => {
+      if (error) {
+        throw new Error('Erreur lors de la vérification de la variante.'); // Lancer une erreur pour être capturée par le bloc catch
       } else {
-        // La variante n'existe pas, vous pouvez insérer une nouvelle variante
-        db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
-          if (errorVariante) {
-            res.status(500).json(errorVariante);
-          } else {
-            // Insérer les informations dans la table taille_pays
-            db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
-              if (errorTaillePays) {
-                res.status(500).json(errorTaillePays);
-              } else {
-                res.json({ message: 'Processus réussi' });
-              }
-            });
-          }
-        });
+        if (results.length > 0) {
+          // La variante existe déjà, vous pouvez modifier la quantité du stock existant
+          const existingVariant = results[0];
+          const newStock = parseInt(existingVariant.stock) + parseInt(req.body.stock);
+          // Mettre à jour la quantité du stock pour la variante existante
+          const updateStockQuery = 'UPDATE varianteproduit SET stock = ? WHERE id_produit = ? AND id_taille = ?';
+          const updateStockValues = [newStock, existingVariant.id_produit, idTaille];
+
+          db.query(updateStockQuery, updateStockValues, (updateError, updateResults) => {
+            if (updateError) {
+              throw new Error('Erreur lors de la mise à jour de la quantité de stock.'); // Lancer une erreur pour être capturée par le bloc catch
+            } else {
+              // Répondre avec succès
+              res.json({ message: 'Processus réussi' });
+            }
+          });
+        } else {
+          // La variante n'existe pas, vous pouvez insérer une nouvelle variante
+          db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
+            if (errorVariante) {
+              throw new Error('Erreur lors de l\'insertion de la nouvelle variante.'); // Lancer une erreur pour être capturée par le bloc catch
+            } else {
+              // Insérer les informations dans la table taille_pays
+              db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
+                if (errorTaillePays) {
+                  throw new Error('Erreur lors de l\'insertion des informations dans la table taille_pays.'); // Lancer une erreur pour être capturée par le bloc catch
+                } else {
+                  res.json({ message: 'Processus réussi' });
+                }
+              });
+            }
+          });
+        }
       }
-    }
-  });
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message }); // Capturer et renvoyer l'erreur au client avec un message d'erreur personnalisé
+  }
 };
 
 exports.deleteVariantProduit = (req, res) => {
