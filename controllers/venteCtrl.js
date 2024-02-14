@@ -320,3 +320,39 @@ WHERE v.est_supprime = 0
     return res.status(500).json({ error: error.message });
   }
 };
+
+exports.getRapportVenteAll = (req, res) => {
+  const { id_marque } = req.params;
+
+  let q = `
+  SELECT
+  m.id_marque,
+  SUM(v.quantite) AS quantite_vendue,
+  SUM(v.prix_unitaire * v.quantite) AS montant_vendu,
+  vp.stock AS quantite_en_stock,
+  vp.img,
+  taille.taille,
+  m.nom AS nom_marque,
+  categorie.nom_categorie
+FROM vente v
+INNER JOIN detail_commande ON v.id_detail_commande = detail_commande.id_detail
+INNER JOIN varianteproduit vp ON detail_commande.id_varianteProduit = vp.id_varianteProduit
+INNER JOIN produit p ON vp.id_produit = p.id_produit
+INNER JOIN marque m ON p.id_marque = m.id_marque
+INNER JOIN taille ON vp.id_taille = taille.id_taille
+INNER JOIN categorie ON p.id_categorie = categorie.id_categorie
+WHERE v.est_supprime = 0 AND m.id_marque = ${id_marque}  GROUP BY taille.id_taille;
+  `;
+
+  try {
+    db.query(q, (error, data) => {
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
