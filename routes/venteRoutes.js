@@ -1,5 +1,5 @@
 const express = require("express");
-const { getVente, postVente, deleteVente, putVente, postVenteRetour, getVenteOne, getVenteCount, getRapportVente, getRapportVenteAll } = require("../controllers/venteCtrl");
+const { getVente, postVente, deleteVente, putVente, postVenteRetour, getVenteOne, getVenteCount, getRapportVente, getRapportVenteAll, getRapportVenteSearch } = require("../controllers/venteCtrl");
 const router = express.Router();
 
 
@@ -14,5 +14,6 @@ router.put('/:id', putVente)
 
 router.get("/rapport/vente", getRapportVente);
 router.get("/rapport/venteAll/:id_marque", getRapportVenteAll);
+router.get("/rapport/venteAllSearch", getRapportVenteSearch);
 
 module.exports = router;
