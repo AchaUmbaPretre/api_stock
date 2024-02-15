@@ -1,5 +1,5 @@
 const express = require("express");
-const { getVente, postVente, deleteVente, putVente, postVenteRetour, getVenteOne, getVenteCount, getRapportVente, getRapportVenteAll, getRapportVenteSearch, getRapportVenteClient, getRapportVenteClientOne } = require("../controllers/venteCtrl");
+const { getVente, postVente, deleteVente, putVente, postVenteRetour, getVenteOne, getVenteCount, getRapportVente, getRapportVenteAll, getRapportVenteSearch, getRapportVenteClient, getRapportVenteClientOne, getRapportRevenu, getRapportAchats } = require("../controllers/venteCtrl");
 const router = express.Router();
 
 
@@ -21,5 +21,7 @@ router.get("/rapport/venteAllSearch", getRapportVenteSearch);
 //Rapport vente client
 router.get("/rapportClient/venteClient", getRapportVenteClient);
 router.get("/rapportClient/:clientId", getRapportVenteClientOne);
+router.get("/rapportRevenu/revenu", getRapportRevenu)
+router.get("/rapportAchats/achats", getRapportAchats)
 
 module.exports = router;

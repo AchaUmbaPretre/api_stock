@@ -472,3 +472,58 @@ exports.getRapportVenteClientOne = (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+exports.getRapportRevenu = (req, res) => {
+
+  let q = `
+      SELECT
+      YEAR(date_vente) AS annee,
+      (SELECT mois_nom FROM mois WHERE mois_numero = MONTH(date_vente)) AS mois,
+      COUNT(*) AS nombre_ventes,
+      SUM(prix_unitaire) AS revenu_total,
+      AVG(prix_unitaire) AS revenu_moyen_par_vente
+    FROM vente
+    GROUP BY YEAR(date_vente), MONTH(date_vente)
+    ORDER BY YEAR(date_vente), MONTH(date_vente);
+  `;
+
+  try {
+    db.query(q, (error, data) => {
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+exports.getRapportAchats = (req, res) => {
+
+  let q = `
+  SELECT varianteproduit.id_varianteProduit, varianteproduit.created_at, produit.nom_produit, varianteproduit.stock,varianteproduit.img, taille_pays.prix, couleur.description, marque.nom AS nom_marque, taille.taille
+  FROM varianteproduit
+  JOIN produit ON varianteproduit.id_produit = produit.id_produit
+    INNER JOIN taille_pays ON varianteproduit.id_taille = taille_pays.id_taille
+    INNER JOIN couleur ON varianteproduit.id_couleur = couleur.id_couleur
+    INNER JOIN marque ON produit.id_marque = marque.id_marque
+    INNER JOIN taille ON taille_pays.id_taille = taille.id_taille
+  GROUP BY produit.id_produit, marque.id_marque
+  ORDER BY varianteproduit.created_at DESC;
+  `;
+
+  try {
+    db.query(q, (error, data) => {
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
