@@ -17,6 +17,15 @@ const app = express();
 
 dotenv.config();
 
+// Configuration de l'environnement de développement
+const environment = process.env.PORT || 'development';
+
+if (environment === 'development') {
+  // Activer l'affichage des erreurs détaillées dans les journaux
+  const morgan = require('morgan');
+  app.use(morgan('dev'));
+}
+
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

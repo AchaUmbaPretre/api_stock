@@ -16,4 +16,6 @@ router.get("/rapport/vente", getRapportVente);
 router.get("/rapport/venteAll/:id_marque", getRapportVenteAll);
 router.get("/rapport/venteAllSearch", getRapportVenteSearch);
 
+router.get("/rapportClient/venteClient", getRapportVenteSearch);
+
 module.exports = router;
