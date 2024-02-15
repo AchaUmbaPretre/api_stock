@@ -403,3 +403,72 @@ exports.getRapportVenteSearch = (req, res) => {
   }
 };
 
+exports.getRapportVenteClient = (req, res) => {
+
+  let q = `
+      SELECT vente.*, users.username, varianteproduit.img, client.nom AS nom_client, client.telephone, marque.nom AS nom_marque, taille.taille AS pointure,
+      statut.nom_statut AS statut,
+      SUM(vente.quantite) AS total_varianteproduit,
+      SUM(vente.prix_unitaire) AS total_prix_vente
+    FROM vente
+      INNER JOIN users ON vente.id_livreur = users.id
+      INNER JOIN detail_commande ON vente.id_detail_commande = detail_commande.id_detail
+      INNER JOIN varianteproduit ON varianteproduit.id_varianteProduit = detail_commande.id_varianteProduit
+      INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+      INNER JOIN marque ON produit.id_marque = marque.id_marque
+      INNER JOIN commande ON vente.id_commande = commande.id_commande
+      INNER JOIN statut ON commande.statut = statut.id_statut
+      INNER JOIN client ON commande.id_client = client.id
+      INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+    WHERE vente.est_supprime = 0
+    GROUP BY client.id
+  `;
+
+  try {
+    db.query(q, (error, data) => {
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getRapportVenteClientOne = (req, res) => {
+  const clientId = req.params.clientId;
+
+  let q = `
+      SELECT vente.*, users.username, varianteproduit.img, client.nom AS nom_client, client.telephone, marque.nom AS nom_marque, taille.taille AS pointure,
+      statut.nom_statut AS statut,
+      SUM(vente.quantite) AS total_varianteproduit,
+      SUM(vente.prix_unitaire) AS total_prix_vente
+    FROM vente
+      INNER JOIN users ON vente.id_livreur = users.id
+      INNER JOIN detail_commande ON vente.id_detail_commande = detail_commande.id_detail
+      INNER JOIN varianteproduit ON varianteproduit.id_varianteProduit = detail_commande.id_varianteProduit
+      INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
+      INNER JOIN marque ON produit.id_marque = marque.id_marque
+      INNER JOIN commande ON vente.id_commande = commande.id_commande
+      INNER JOIN statut ON commande.statut = statut.id_statut
+      INNER JOIN client ON commande.id_client = client.id
+      INNER JOIN taille ON varianteproduit.id_taille = taille.id_taille
+    WHERE vente.est_supprime = 0
+      AND client.id = ?
+    GROUP BY taille.id_taille
+  `;
+
+  try {
+    db.query(q, [clientId], (error, data) => {
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      return res.status(200).json(data);
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
