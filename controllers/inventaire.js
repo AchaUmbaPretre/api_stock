@@ -4,36 +4,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-/* exports.getInventaire = (req, res) => {
-    const q = `SELECT varianteproduit.*, produit.id_produit, taille_pays.stock AS quantite
-                FROM varianteproduit
-                INNER JOIN produit ON varianteproduit.id_produit = produit.id_produit
-                INNER JOIN taille_pays ON varianteproduit.id_varianteProduit = taille_pays.id_varianteProduit`;
-  
-    db.query(q, (error, data) => {
-      if (error) return res.status(500).send(error);
-  
-      // Calculer la quantité totale pour chaque variante de produit
-      const inventaire = data.reduce((acc, row) => {
-        const existingItem = acc.find((item) => item.id_varianteProduit === row.id_varianteProduit);
-  
-        if (existingItem) {
-          existingItem.quantite += row.quantite;
-        } else {
-          acc.push({
-            id_inventaire: row.id_varianteProduit, // Utilisez l'id de la variante de produit comme id d'inventaire
-            id_produit: row.id_produit,
-            quantite: row.quantite,
-          });
-        }
-  
-        return acc;
-      }, []);
-  
-      return res.status(200).json(inventaire);
-    });
-  } */;
-
 exports.getInventaire = (req,res)=> {
     const {id} = req.params;
 
