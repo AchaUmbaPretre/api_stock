@@ -12,7 +12,7 @@ exports.getRapportVente = (req, res) => {
     m.id_marque,
     SUM(v.quantite) AS quantite_vendue,
     SUM(v.prix_unitaire * v.quantite) AS montant_vendu,
-    vp.stock AS quantite_en_stock,
+    SUM(vp.stock) AS quantite_en_stock,
     vp.img,
     taille.taille,
     m.nom AS nom_marque,
@@ -89,7 +89,6 @@ exports.getRapportVenteAll = (req, res) => {
   
 exports.getRapportVenteSearch = (req, res) => {
     const { start_date, end_date, id_marque } = req.query;
-    console.log(req.query)
   
     let q = `
       SELECT
@@ -200,7 +199,7 @@ exports.getRapportVenteClient = (req, res) => {
     }
   };
   
-  exports.getRapportRevenu = (req, res) => {
+exports.getRapportRevenu = (req, res) => {
   
     let q = `
         SELECT
@@ -255,7 +254,7 @@ exports.getRapportVenteClient = (req, res) => {
     }
   };
   
-  exports.getAchatsTotal = (req, res) => {
+exports.getAchatsTotal = (req, res) => {
     const q = `SELECT SUM(taille_pays.prix) AS montant_total_achats
     FROM taille_pays`;
   
@@ -280,6 +279,30 @@ exports.getAchatsTotalDuel = (req, res) => {
 exports.getVenteTotal = (req, res) => {
     const q = `SELECT SUM(prix_unitaire) AS montant_total_vente
     FROM vente;`;
+  
+    db.query(q ,(error, data)=>{
+      if(error) res.status(500).send(error)
+  
+      return res.status(200).json(data);
+  })
+  }
+
+exports.getAchatsMois = (req, res) => {
+    const q = `SELECT MONTH(created_at) AS mois, SUM(prix) AS total_achats
+    FROM taille_pays
+    GROUP BY mois`;
+  
+    db.query(q ,(error, data)=>{
+      if(error) res.status(500).send(error)
+  
+      return res.status(200).json(data);
+  })
+  }
+
+exports.getVenteMois = (req, res) => {
+    const q = `SELECT MONTH(date_vente) AS mois, SUM(prix_unitaire) AS total_vente
+    FROM vente
+    GROUP BY mois`;
   
     db.query(q ,(error, data)=>{
       if(error) res.status(500).send(error)
