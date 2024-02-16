@@ -11,6 +11,7 @@ const commandeRoutes = require('./routes/commandeRoutes');
 const livraisonRoutes = require('./routes/livraisonRoutes');
 const livreurRoutes = require('./routes/livreurRoutes');
 const venteRoutes = require('./routes/venteRoutes');
+const RapportRoutes = require('./routes/rapportRoutes');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/commande', commandeRoutes);
 app.use('/api/livraison', livraisonRoutes);
 app.use('/api/livreur', livreurRoutes);
 app.use('/api/vente', venteRoutes);
+app.use('/api/rapport', RapportRoutes);
 
 const port = process.env.PORT || 8080;
 

@@ -98,7 +98,7 @@ exports.getProduitRecement = (req, res) => {
     }
   };
 
-  exports.getProduitRecement = (req, res) => {
+exports.getProduitRecement = (req, res) => {
     try {
       const q = `
         SELECT
