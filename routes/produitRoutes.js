@@ -21,7 +21,11 @@ router.get('/varianteFiltre/:id', getVariantProduitFiltrage);
 router.get('/varianteFiltreMarque/:id', getVariantProduitFiltrageMarque);
 router.get('/varianteFiltreCible/:id', getVariantProduitFiltrageCible);
 router.get('/varianteFiltreTaille/:id', getVariantProduitFiltrageTaille);
-router.post('/varianteProduit', postVariantProduit);
+
+const multer = require('multer');
+const upload = multer({ dest: 'public/uploads/' });
+
+router.post('/varianteProduit',upload.single('img'), postVariantProduit);
 router.delete('/varianteProduit/:id', deleteVariantProduit);
 
 router.get('/couleur', getCouleur);

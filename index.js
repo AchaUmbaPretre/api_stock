@@ -14,10 +14,13 @@ const venteRoutes = require('./routes/venteRoutes');
 const RapportRoutes = require('./routes/rapportRoutes');
 const DepensesRoutes = require('./routes/depensesRoutes');
 const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
 
 dotenv.config();
+
 
 // Configuration de l'environnement de développement
 const environment = process.env.PORT || 'development';
@@ -28,10 +31,12 @@ if (environment === 'development') {
   app.use(morgan('dev'));
 }
 
+
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json());
+app.use(express.static('public'));
 
 app.setMaxListeners(0);
 
@@ -48,6 +53,17 @@ app.use('/api/rapport', RapportRoutes);
 app.use('/api/depenses', DepensesRoutes);
 
 const port = process.env.PORT || 8080;
+
+/* const upload = multer({ dest: 'backend/uploads/' });
+
+app.post('/api/upload', upload.single('photo'), (req, res) => {
+  const photoFile = req.file; // Fichier téléchargé
+  const photoUrl = `/uploads/${photoFile.filename}`; // URL de la photo
+
+  // Enregistrez le chemin de l'image dans la base de données
+
+  res.json({ photoUrl });
+}) */;
 
 // Gestionnaire d'erreurs global pour les erreurs non capturées
 process.on('uncaughtException', (err) => {

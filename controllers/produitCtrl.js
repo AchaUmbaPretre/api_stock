@@ -465,6 +465,11 @@ exports.getVariantProduitFiltrageTaille = (req, res) => {
   };
 
 exports.postVariantProduit = (req, res) => {
+
+  const photoFile = req.file; // Fichier téléchargé
+  const photoUrl = `/uploads/${photoFile.filename}`
+  res.setHeader('Content-Type', 'multipart/form-data');
+
   const qVarianteProduit =
     'INSERT INTO varianteproduit(`id_produit`, `id_taille`, `id_couleur`, `stock`, `code_variant`,`img`) VALUES (?, ?, ?, ?, ?, ?)';
   const valuesVariante = [
@@ -473,7 +478,7 @@ exports.postVariantProduit = (req, res) => {
     req.body.id_couleur,
     req.body.stock,
     req.body.code_variant,
-    req.body.img
+    photoUrl
   ];
 
   const qTaillePays =
@@ -516,7 +521,7 @@ exports.postVariantProduit = (req, res) => {
           // La variante n'existe pas, vous pouvez insérer une nouvelle variante
           db.query(qVarianteProduit, valuesVariante, (errorVariante, dataVariante) => {
             if (errorVariante) {
-              throw new Error('Erreur lors de l\'insertion de la nouvelle variante.'); // Lancer une erreur pour être capturée par le bloc catch
+              throw new Error(errorVariante); // Lancer une erreur pour être capturée par le bloc catch
             } else {
               // Insérer les informations dans la table taille_pays
               db.query(qTaillePays, valuesTaillePays, (errorTaillePays, dataTaillePays) => {
